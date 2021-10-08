@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Data
 public class CloudKeys {
-    private int cloud_keyId;
+    private int cloudKeyId;
     private int ownerId;
     private int keyId;
     private String fileKey;
