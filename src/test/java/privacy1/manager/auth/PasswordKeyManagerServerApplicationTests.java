@@ -1,4 +1,4 @@
-package com.privac_ymanager.auth;
+package privacy1.manager.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

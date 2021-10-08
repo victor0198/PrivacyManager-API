@@ -1,4 +1,4 @@
-package models;
+package privacy.models;
 import lombok.*;
 
 @ToString
@@ -8,10 +8,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Cloud_keys {
-    int cloud_keyId;
-    int ownerId;
+public class My_keys {
+    int userId;
     int keyId;
+    String filename;
     String fileKey;
     String fileChecksum;
 }

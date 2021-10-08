@@ -1,4 +1,4 @@
-package models;
+package privacy.models;
 import lombok.*;
 
 @ToString
