@@ -8,10 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class My_keys {
-    int userId;
-    int keyId;
-    String filename;
-    String fileKey;
-    String fileChecksum;
+public class SharedKeys {
+    private int cloudKeyId;
+    private int friendshipId;
 }

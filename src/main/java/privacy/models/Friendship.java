@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Data
 public class Friendship {
-    int friendshipId;
-    int userOneId;
-    int userTwoId;
+    private int friendshipId;
+    private int userOneId;
+    private int userTwoId;
 }
