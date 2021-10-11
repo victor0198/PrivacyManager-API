@@ -1,6 +1,10 @@
 package privacy.models;
 import lombok.*;
 
+import javax.persistence.*;
+
+@Entity
+@Table
 @ToString
 @Getter
 @Setter
@@ -9,8 +13,18 @@ import lombok.*;
 @AllArgsConstructor
 @Data
 public class MyKeys {
-    private int userId;
-    private int keyId;
+    @Id
+//    @SequenceGenerator(
+//            name = "key_sequence",
+//            sequenceName = "key_sequence",
+//            allocationSize = 1
+//    )
+//    @GeneratedValue(
+//            strategy = GenerationType.SEQUENCE,
+//            generator = "_sequence"
+//    )
+    private long userId;
+    private long keyId;
     private String filename;
     private String fileKey;
     private String fileChecksum;

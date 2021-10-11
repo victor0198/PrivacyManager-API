@@ -1,6 +1,10 @@
 package privacy.models;
 import lombok.*;
 
+import javax.persistence.*;
+
+@Entity
+@Table
 @ToString
 @Getter
 @Setter
@@ -9,7 +13,17 @@ import lombok.*;
 @AllArgsConstructor
 @Data
 public class CloudKeys {
-    private int cloudKeyId;
+    @Id
+    @SequenceGenerator(
+            name = "key_sequence",
+            sequenceName = "key_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "key_sequence"
+    )
+    private long cloudKeyId;
     private int ownerId;
     private int keyId;
     private String fileKey;

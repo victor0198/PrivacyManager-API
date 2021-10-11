@@ -1,6 +1,12 @@
 package privacy.models;
 import lombok.*;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table
 @ToString
 @Getter
 @Setter
@@ -9,6 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @Data
 public class SharedKeys {
-    private int cloudKeyId;
-    private int friendshipId;
+    @Id
+    private long cloudKeyId;
+    private long friendshipId;
 }
