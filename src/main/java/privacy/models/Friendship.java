@@ -11,9 +11,10 @@ import javax.persistence.*;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+//@Data
 public class Friendship {
-    @Id
+
+
     @SequenceGenerator(
             name = "friendship_sequence",
             sequenceName = "friendship_sequence",
@@ -23,7 +24,13 @@ public class Friendship {
             strategy = GenerationType.SEQUENCE,
             generator = "friendship_sequence"
     )
+    @Id
     private long friendshipId;
-    private int userOneId;
-    private int userTwoId;
+    private long userOneId;
+    private long userTwoId;
+
+    public Friendship(long userOneId, long userTwoId) {
+        this.userOneId = userOneId;
+        this.userTwoId = userTwoId;
+    }
 }

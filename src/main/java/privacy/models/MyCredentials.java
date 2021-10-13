@@ -8,10 +8,9 @@ import javax.persistence.*;
 @ToString
 @Getter
 @Setter
-@EqualsAndHashCode
+//@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class MyCredentials {
 
     @SequenceGenerator(
@@ -23,12 +22,17 @@ public class MyCredentials {
             strategy = GenerationType.SEQUENCE,
             generator = "credential_sequence"
     )
-    private long userId;
     @Id
     private long credentialId;
+    private long userId;
     private String service;
     private String login;
     private String password;
 
-
+    public MyCredentials(long userId, String service, String login, String password) {
+        this.userId = userId;
+        this.service = service;
+        this.login = login;
+        this.password = password;
+    }
 }

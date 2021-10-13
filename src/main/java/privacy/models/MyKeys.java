@@ -8,12 +8,10 @@ import javax.persistence.*;
 @ToString
 @Getter
 @Setter
-@EqualsAndHashCode
+//@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class MyKeys {
-    @Id
 //    @SequenceGenerator(
 //            name = "key_sequence",
 //            sequenceName = "key_sequence",
@@ -23,9 +21,16 @@ public class MyKeys {
 //            strategy = GenerationType.SEQUENCE,
 //            generator = "_sequence"
 //    )
-    private long userId;
+//    private long id;
+    @Id
     private long keyId;
     private String filename;
     private String fileKey;
     private String fileChecksum;
+
+    public MyKeys(String filename, String fileKey, String fileChecksum) {
+        this.filename = filename;
+        this.fileKey = fileKey;
+        this.fileChecksum = fileChecksum;
+    }
 }

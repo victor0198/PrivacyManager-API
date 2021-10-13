@@ -1,21 +1,20 @@
 package privacy.models;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table
 @ToString
 @Getter
 @Setter
-@EqualsAndHashCode
+//@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class SharedKeys {
+public class SharedKeys implements Serializable {
     @Id
     private long cloudKeyId;
+    @Id
     private long friendshipId;
 }

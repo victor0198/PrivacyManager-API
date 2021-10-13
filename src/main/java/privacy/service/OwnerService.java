@@ -2,9 +2,11 @@ package privacy.service;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import privacy.dao.OwnerRepository;
@@ -30,7 +32,7 @@ public class OwnerService implements UserDetailsService {
         }
 
         String encodedPasword = bCryptPasswordEncoder.encode(owner.getPassword());
-
+//        String encodedPasword = owner.getPassword();
         owner.setPassword(encodedPasword);
 
         ownerRepository.save(owner);

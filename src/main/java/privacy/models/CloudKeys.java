@@ -2,30 +2,36 @@ package privacy.models;
 import lombok.*;
 
 import javax.persistence.*;
-
-@Entity
 @Table
+@Entity
 @ToString
 @Getter
 @Setter
-@EqualsAndHashCode
+//@EqualsAndHashCode
 @NoArgsConstructor
-@AllArgsConstructor
-@Data
+//@AllArgsConstructor
 public class CloudKeys {
     @Id
     @SequenceGenerator(
-            name = "key_sequence",
-            sequenceName = "key_sequence",
+            name = "cl_key_sequence",
+            sequenceName = "cl_key_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "key_sequence"
+            generator = "cl_key_sequence"
     )
     private long cloudKeyId;
-    private int ownerId;
-    private int keyId;
+    private long ownerId;
+    private long keyId;
     private String fileKey;
     private String fileChecksum;
+
+    public CloudKeys(long ownerId, long keyId, String fileKey, String fileChecksum) {
+        this.ownerId = ownerId;
+        this.keyId = keyId;
+        this.fileKey = fileKey;
+        this.fileChecksum = fileChecksum;
+    }
+
 }
