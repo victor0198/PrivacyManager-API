@@ -22,7 +22,7 @@ public class AuthenticationController {
     @Autowired
     private OwnerService ownerService;
 
-    @RequestMapping(value="/authenticate", method = RequestMethod.POST)
+    @RequestMapping(value="/api/v1/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         try {
             authenticationManager.authenticate(
