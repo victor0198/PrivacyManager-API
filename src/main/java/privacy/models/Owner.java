@@ -16,6 +16,7 @@ import java.util.Collection;
 //@EqualsAndHashCode
 @NoArgsConstructor
 @ToString
+@Table
 @Entity
 public class Owner implements UserDetails{
     @Id
