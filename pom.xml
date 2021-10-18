@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>privacy.models</groupId>
-    <artifactId>privacy,manager.server</artifactId>
+    <artifactId>privacy.manager.server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>privacy.manager.server</name>
     <description>Demo project for Spring Boot</description>
@@ -95,6 +95,13 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <version>2.5.4</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -136,5 +143,6 @@
 <!--            </plugin>-->
         </plugins>
     </build>
+
 
 </project>

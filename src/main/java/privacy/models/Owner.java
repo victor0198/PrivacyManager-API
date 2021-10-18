@@ -1,7 +1,8 @@
 package privacy.models;
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,16 +31,20 @@ public class Owner implements UserDetails{
             generator = "owner_sequence"
     )
     private Long id;
-    private String firstName;
+    @NotNull
+    @Column(nullable = false, unique = true)
+    private String username;
+    @Email
+    @Column(nullable = false, unique = true)
     private String email;
     private String password;
     private Boolean enabled = true;
     private Boolean notLocked = true;
 
-    public Owner(String firstName,
+    public Owner(String username,
                  String email,
                  String password) {
-        this.firstName = firstName;
+        this.username = username;
         this.email = email;
         this.password = password;
     }
@@ -56,7 +61,7 @@ public class Owner implements UserDetails{
 
     @Override
     public String getUsername() {
-        return firstName;
+        return username;
     }
 
     @Override
