@@ -27,9 +27,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/", "/index", "/css/*", "/js/*", "/docs/**", "/api/v1/registration/**", "/api/v1/authenticate")
                 .permitAll()
                 .anyRequest()
-                .authenticated()
-                .and()
-                .formLogin();
+                .authenticated();
+
     }
 
     @Override

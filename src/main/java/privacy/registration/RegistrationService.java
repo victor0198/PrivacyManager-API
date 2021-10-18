@@ -13,12 +13,12 @@ public class RegistrationService {
     private final OwnerService ownerService;
 
     public JSONObject register(RegistrationRequest request) throws JSONException {
-        boolean isValidEmail = emailValidator.test(request.getEmail());
-        if(!isValidEmail){
-            throw new IllegalStateException("email not valid");
-        }
-
-        return ownerService.signUpOwner(new Owner(request.getFirstName(), request.getEmail(), request.getPassword()));
+        String email = request.getUsername().concat("@pm.com");
+//        boolean isValidEmail = emailValidator.test(email);
+//        if(!isValidEmail){
+//            throw new IllegalStateException("email not valid");
+//        }
+        return ownerService.signUpOwner(new Owner(request.getUsername(), email, request.getPassword()));
     }
 
 }
