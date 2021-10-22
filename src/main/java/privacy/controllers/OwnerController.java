@@ -1,4 +1,4 @@
-package privacy.api;
+package privacy.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.*;
