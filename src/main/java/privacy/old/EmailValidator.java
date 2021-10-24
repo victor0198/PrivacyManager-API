@@ -1,4 +1,4 @@
-package privacy.registration;
+package privacy.old;
 
 import org.springframework.stereotype.Service;
 import java.util.regex.Matcher;

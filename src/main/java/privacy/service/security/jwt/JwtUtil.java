@@ -1,4 +1,4 @@
-package privacy.service.security.util;
+package privacy.service.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -40,7 +40,7 @@ public class JwtUtil {
 
     public String generateToken(Authentication userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
+        return createToken(claims, userDetails.getName()); //userDetails.getUsername()
     }
 
     private String createToken(Map<String, Object> claims, String subject) {

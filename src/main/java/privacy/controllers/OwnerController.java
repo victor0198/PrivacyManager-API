@@ -1,28 +1,25 @@
 package privacy.controllers;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.*;
-import privacy.models.Owner;
-import privacy.service.OwnerService;
+import privacy.service.security.OwnerDetailsServiceImpl;
 
-import java.util.List;
-
+/** This controller will eventually be safely deleted **/
 
 @RestController
 @RequestMapping(path = "api/v1/owner")
 @AllArgsConstructor
 public class OwnerController {
 
-    private final OwnerService ownerService;
-
-    @GetMapping
-    public List<Owner>  getAllOwners(){return ownerService.getAllOwners();}
-
-    @PostMapping
-    public void signUpOwner(@RequestBody Owner owner) throws JSONException {
-        if(ownerService.getAllOwners().contains(owner)){
-            throw new IllegalStateException("Owner exists!");
-        }
-        ownerService.signUpOwner(owner);
-    };
+    private final OwnerDetailsServiceImpl ownerService;
+//
+//    @GetMapping
+//    public List<Owner>  getAllOwners(){return ownerService.getAllOwners();}
+//
+//    @PostMapping
+//    public void signUpOwner(@RequestBody Owner owner) throws JSONException {
+//        if(ownerService.getAllOwners().contains(owner)){
+//            throw new IllegalStateException("Owner exists!");
+//        }
+//        ownerService.signUpOwner(owner);
+//    };
 }

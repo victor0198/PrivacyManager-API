@@ -11,6 +11,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -30,7 +32,7 @@ public class Owner implements UserDetails{
             strategy = GenerationType.SEQUENCE,
             generator = "owner_sequence"
     )
-    private Long id;
+    private Long ownerId;
     @NotNull
     @Column(nullable = false, unique = true)
     private String username;
@@ -40,6 +42,9 @@ public class Owner implements UserDetails{
     private String password;
     private Boolean enabled = true;
     private Boolean notLocked = true;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "role", joinColumns = @JoinColumn(name = "ownerId"), inverseJoinColumns = @JoinColumn(name = "roleId"))
+    private Set<Role> roles = new HashSet<>();
 
     public Owner(String username,
                  String email,
@@ -79,20 +84,9 @@ public class Owner implements UserDetails{
         return true;
     }
 
-    public String getEmail(){
-        return email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Long getId(){
-        return id;
-    }
-
     @Override
     public boolean isEnabled() {
         return enabled;
     }
+
 }

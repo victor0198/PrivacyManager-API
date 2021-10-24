@@ -1,5 +1,5 @@
 package privacy.service.security;
-import privacy.service.OwnerService;
+import privacy.old.OwnerService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

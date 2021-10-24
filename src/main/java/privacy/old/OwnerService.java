@@ -1,4 +1,4 @@
-package privacy.service;
+package privacy.old;
 import lombok.AllArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

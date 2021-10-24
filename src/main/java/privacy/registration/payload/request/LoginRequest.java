@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 
+
+/** Constructs the log in request that is sent to the server **/
 @Getter
 @Setter
 @AllArgsConstructor

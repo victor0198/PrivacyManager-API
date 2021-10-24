@@ -1,5 +1,6 @@
 package privacy.models;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "roles")
 @NoArgsConstructor
+@Getter
 @Setter
 public class Role {
     @Id
@@ -20,7 +22,7 @@ public class Role {
             strategy = GenerationType.SEQUENCE,
             generator = "role_sequence"
     )
-    private long id;
+    private long roleId;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
