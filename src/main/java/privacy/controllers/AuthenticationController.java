@@ -94,12 +94,12 @@ public class AuthenticationController {
             user.setRoles(roles);
             Owner user1 = ownerRepository.save(user);
             Owner nullUser = ownerRepository.findByEmail(user1.getEmail());
-            ownerRepository.save(new Owner(nullUser.getOwnerId(), nullUser.getUsername(), nullUser.getEmail(), nullUser.getPassword(),
-                    nullUser.getEnabled(), nullUser.getNotLocked(), nullUser.getRoles(), nullUser.getAuthorities(), nullUser.isAccountNonExpired(), nullUser.getAuthorities()));
+            ownerRepository.save(new Owner(nullUser.getUsername(), nullUser.getEmail(), nullUser.getPassword()));
 
         } else if (strRoles.equals("admin")) {
             Logger.info("inside else signup");
 
+            /** If one signs up as administrator, no username, email or password is required **/
             Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(adminRole);
@@ -108,6 +108,7 @@ public class AuthenticationController {
 
         }
         else {
+            /** If one signs up as user, they are required a username, an email and a password **/
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             Logger.info("inside user "+strRoles);
@@ -115,8 +116,7 @@ public class AuthenticationController {
             user.setRoles(roles);
             Owner user1 = ownerRepository.save(user);
             Owner nullOwner=ownerRepository.findByEmail(user1.getEmail());
-            ownerRepository.save(new Owner(nullOwner.getOwnerId(), nullOwner.getUsername(), nullOwner.getEmail(), nullOwner.getPassword(),
-                    nullOwner.getEnabled(), nullOwner.getNotLocked(), nullOwner.getRoles(), nullOwner.getAuthorities(), nullOwner.isAccountNonExpired(), nullOwner.getAuthorities()));
+            ownerRepository.save(new Owner(nullOwner.getUsername(), nullOwner.getEmail(), nullOwner.getPassword()));
         }
 
 
