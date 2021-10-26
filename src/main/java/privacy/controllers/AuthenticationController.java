@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value="/api/v1/authenticate", method = RequestMethod.POST)
+@RequestMapping
 public class AuthenticationController {
     private static final org.slf4j.Logger Logger= LoggerFactory.getLogger(AuthenticationController.class);
 
@@ -77,7 +77,7 @@ public class AuthenticationController {
         }
 
         /** Create new user's account **/
-        Owner user = new Owner(signUpRequest.getUsername(),signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
+        Owner user = new Owner(signUpRequest.getUsername(),signUpRequest.getEmail(), signUpRequest.getRole(), encoder.encode(signUpRequest.getPassword()));
 
         Logger.info(signUpRequest.getUsername());
         String strRoles = signUpRequest.getRole();
@@ -94,7 +94,7 @@ public class AuthenticationController {
             user.setRoles(roles);
             Owner user1 = ownerRepository.save(user);
             Owner nullUser = ownerRepository.findByEmail(user1.getEmail());
-            ownerRepository.save(new Owner(nullUser.getUsername(), nullUser.getEmail(), nullUser.getPassword()));
+            ownerRepository.save(new Owner(nullUser.getUsername(), nullUser.getEmail(), nullUser.getRole(), nullUser.getPassword()));
 
         } else if (strRoles.equals("admin")) {
             Logger.info("inside else signup");
@@ -116,7 +116,7 @@ public class AuthenticationController {
             user.setRoles(roles);
             Owner user1 = ownerRepository.save(user);
             Owner nullOwner=ownerRepository.findByEmail(user1.getEmail());
-            ownerRepository.save(new Owner(nullOwner.getUsername(), nullOwner.getEmail(), nullOwner.getPassword()));
+            ownerRepository.save(new Owner(nullOwner.getUsername(), nullOwner.getEmail(), nullOwner.getRole(), nullOwner.getPassword()));
         }
 
 

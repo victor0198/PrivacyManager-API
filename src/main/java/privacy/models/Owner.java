@@ -40,6 +40,7 @@ public class Owner implements UserDetails{
     @Column(nullable = false, unique = true)
     private String email;
     private String password;
+    private String role;
     private Boolean enabled = true;
     private Boolean notLocked = true;
     @ManyToMany(fetch = FetchType.LAZY)
@@ -47,13 +48,13 @@ public class Owner implements UserDetails{
     private Set<Role> roles = new HashSet<>();
 
     public Owner(String username,
-                 String email,
+                 String email, String role,
                  String password) {
         this.username = username;
         this.email = email;
+        this.role = role;
         this.password = password;
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
