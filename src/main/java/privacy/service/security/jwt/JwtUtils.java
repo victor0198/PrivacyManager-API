@@ -16,10 +16,10 @@ import privacy.service.security.OwnerDetailsImpl;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-//    @Value("${privacy.app.jwtSecret}")
+    @Value("mobappSecurityKey")
     private String jwtSecret;
 
-//    @Value("${bezkoder.app.jwtExpirationMs}")
+    @Value("86400000")
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {

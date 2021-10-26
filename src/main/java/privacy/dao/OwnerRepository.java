@@ -12,14 +12,11 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface OwnerRepository extends JpaRepository<Owner, Long> {
     Optional<Owner> findById(Long ownerId);
-    Optional<Owner> findOwnerByEmail(String ownerEmail);
 
     Optional<Owner> findOwnerByUsername(String ownerUsername);
-    Optional<Owner> findByUsername(String username);
 
     Boolean existsByUsername(String username);
 
     Boolean existsByEmail(String email);
 
-    Owner findByEmail(String email);
 }

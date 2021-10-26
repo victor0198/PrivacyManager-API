@@ -7,7 +7,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import privacy.dao.OwnerRepository;
@@ -26,8 +25,9 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping
+@RequestMapping("/api/auth")
 public class AuthenticationController {
     private static final org.slf4j.Logger Logger= LoggerFactory.getLogger(AuthenticationController.class);
 
@@ -50,6 +50,7 @@ public class AuthenticationController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
+        /** To sign in, the user has to insert their username and password **/
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -77,67 +78,31 @@ public class AuthenticationController {
         }
 
         /** Create new user's account **/
-        Owner user = new Owner(signUpRequest.getUsername(),signUpRequest.getEmail(), signUpRequest.getRole(), encoder.encode(signUpRequest.getPassword()));
+        Owner user = new Owner(signUpRequest.getUsername(),signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
 
-        Logger.info(signUpRequest.getUsername());
-        String strRoles = signUpRequest.getRole();
-        Logger.info(strRoles);
-
+        Set<String> strRoles = Collections.singleton(signUpRequest.getRole());
         Set<Role> roles = new HashSet<>();
-
+//        Logger.info(signUpRequest.getUsername());
+//        Logger.info(strRoles);
 
         if (strRoles == null) {
-            Logger.info("inside null signup");
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+//            Logger.info("inside null signup");
+            Role userRole = roleRepository.findByName(ERole.USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
-            user.setRoles(roles);
-            Owner user1 = ownerRepository.save(user);
-            Owner nullUser = ownerRepository.findByEmail(user1.getEmail());
-            ownerRepository.save(new Owner(nullUser.getUsername(), nullUser.getEmail(), nullUser.getRole(), nullUser.getPassword()));
+//            user.setRoles(roles);
+//            Owner user1 = ownerRepository.save(user);
+//            Owner nullUser = ownerRepository.findByEmail(user1.getEmail());
+//            ownerRepository.save(new Owner(nullUser.getUsername(), nullUser.getEmail(), nullUser.getRole(), nullUser.getPassword()));
 
-        } else if (strRoles.equals("admin")) {
-            Logger.info("inside else signup");
-
-            /** If one signs up as administrator, no username, email or password is required **/
-            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+        } else if ("admin".equals(strRoles)){
+            Role adminRole = roleRepository.findByName(ERole.ADMIN)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(adminRole);
-            user.setRoles(roles);
-            ownerRepository.save(user);
 
         }
-        else {
-            /** If one signs up as user, they are required a username, an email and a password **/
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            Logger.info("inside user "+strRoles);
-            roles.add(userRole);
-            user.setRoles(roles);
-            Owner user1 = ownerRepository.save(user);
-            Owner nullOwner=ownerRepository.findByEmail(user1.getEmail());
-            ownerRepository.save(new Owner(nullOwner.getUsername(), nullOwner.getEmail(), nullOwner.getRole(), nullOwner.getPassword()));
-        }
-
-
-//		strRoles.forEach(role -> {
-//			System.out.println("inside not null");
-//			switch (role) {
-//			case "admin":
-//				Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-//						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//				roles.add(adminRole);
-//
-//				break;
-//			default:
-//				Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-//						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//				System.out.println("inside user");
-//				roles.add(userRole);
-//			}
-//		});
-//
-        Logger.info("outside");
+        user.setRoles(roles);
+        ownerRepository.save(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 

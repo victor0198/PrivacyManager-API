@@ -23,6 +23,10 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
         <dependency>
@@ -30,10 +34,7 @@
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -70,6 +71,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-maven-plugin -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -101,6 +109,13 @@
             <artifactId>json</artifactId>
             <version>20210307</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.liquibase/liquibase-core -->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.5.0</version>
+        </dependency>
+
 
 
     </dependencies>
@@ -110,37 +125,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok-maven-plugin</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                &lt;!&ndash;start with basic information to get Liquibase plugin:-->
-<!--                include <groupId>, <artifactID>, and <version> elements&ndash;&gt;-->
-<!--                <groupId>org.liquibase</groupId>-->
-<!--                <artifactId>liquibase-maven-plugin</artifactId>-->
-<!--                <version>4.2.0</version>-->
-<!--                <configuration>-->
-<!--                    &lt;!&ndash;set values for Liquibase properties and settings-->
-<!--                    for example, the location of a properties file to use&ndash;&gt;-->
-<!--                    <propertyFile>liquibase.properties</propertyFile>-->
-<!--                </configuration>-->
-<!--                <dependencies>-->
-<!--                    &lt;!&ndash;set up any dependencies for Liquibase to function in your-->
-<!--                    environment for example, a database-specific plugin&ndash;&gt;-->
-<!--                    <dependency>-->
-<!--                        <groupId>org.liquibase.ext</groupId>-->
-<!--                        <artifactId>liquibase-<privacy_manager></artifactId>-->
-<!--                        <version>4.5.0</version>-->
-<!--                    </dependency>-->
-<!--                </dependencies>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 

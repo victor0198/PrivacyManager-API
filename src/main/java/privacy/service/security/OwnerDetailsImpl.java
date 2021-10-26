@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class OwnerDetailsImpl implements UserDetails {
+    private static final long serialVersionUID = 1L; //no idea what it does
     private Long id;
     private String username;
     private String email;
@@ -29,6 +30,11 @@ public class OwnerDetailsImpl implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     public OwnerDetailsImpl(Long ownerId, String username, String email, String password, List<GrantedAuthority> authorities) {
+        this.id = ownerId;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
     }
 
     public static OwnerDetailsImpl build(Owner owner) {

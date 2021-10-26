@@ -22,7 +22,7 @@ public class Role {
             strategy = GenerationType.SEQUENCE,
             generator = "role_sequence"
     )
-    private long roleId;
+    private long id;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)

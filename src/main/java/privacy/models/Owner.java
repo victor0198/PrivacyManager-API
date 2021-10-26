@@ -18,7 +18,6 @@ import java.util.Set;
 @Setter
 //@EqualsAndHashCode
 @NoArgsConstructor
-@ToString
 @Table
 @Entity
 public class Owner implements UserDetails{
@@ -43,17 +42,19 @@ public class Owner implements UserDetails{
     private String role;
     private Boolean enabled = true;
     private Boolean notLocked = true;
+    /** A user may have more than one role, so we create a
+     * many to many relationship and join the corresponding columns
+     * into the new table: owner_roles.
+     */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "role", joinColumns = @JoinColumn(name = "ownerId"), inverseJoinColumns = @JoinColumn(name = "roleId"))
+    @JoinTable(name = "owner_roles", joinColumns = @JoinColumn(name = "owner_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    public Owner(String username,
-                 String email, String role,
-                 String password) {
+
+    public Owner(String username, String email, String encode) {
         this.username = username;
-        this.email = email;
-        this.role = role;
-        this.password = password;
+        this.email = email+"@pm.com";
+        this.password = encode;
     }
 
     @Override
@@ -61,15 +62,6 @@ public class Owner implements UserDetails{
         return null;
     }
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
 
     @Override
     public boolean isAccountNonExpired() {
