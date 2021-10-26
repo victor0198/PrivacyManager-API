@@ -11,12 +11,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 //@EqualsAndHashCode
 @NoArgsConstructor
-@ToString
 @Table
 @Entity
 public class Owner implements UserDetails{
@@ -30,7 +31,7 @@ public class Owner implements UserDetails{
             strategy = GenerationType.SEQUENCE,
             generator = "owner_sequence"
     )
-    private Long id;
+    private Long ownerId;
     @NotNull
     @Column(nullable = false, unique = true)
     private String username;
@@ -38,15 +39,22 @@ public class Owner implements UserDetails{
     @Column(nullable = false, unique = true)
     private String email;
     private String password;
+    private String role;
     private Boolean enabled = true;
     private Boolean notLocked = true;
+    /** A user may have more than one role, so we create a
+     * many to many relationship and join the corresponding columns
+     * into the new table: owner_roles.
+     */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "owner_roles", joinColumns = @JoinColumn(name = "owner_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
-    public Owner(String username,
-                 String email,
-                 String password) {
+
+    public Owner(String username, String email, String encode) {
         this.username = username;
-        this.email = email;
-        this.password = password;
+        this.email = email+"@pm.com";
+        this.password = encode;
     }
 
     @Override
@@ -54,15 +62,6 @@ public class Owner implements UserDetails{
         return null;
     }
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -79,20 +78,9 @@ public class Owner implements UserDetails{
         return true;
     }
 
-    public String getEmail(){
-        return email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Long getId(){
-        return id;
-    }
-
     @Override
     public boolean isEnabled() {
         return enabled;
     }
+
 }
