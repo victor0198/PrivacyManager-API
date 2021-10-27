@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +51,6 @@ public class AuthenticationController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-        /** To sign in, the user has to insert their username and password **/
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -58,7 +58,7 @@ public class AuthenticationController {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         OwnerDetailsImpl userDetails = (OwnerDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
+        List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(
@@ -77,31 +77,25 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        /** Create new user's account **/
         Owner user = new Owner(signUpRequest.getUsername(),signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
 
-        Set<String> strRoles = Collections.singleton(signUpRequest.getRole());
+        String requestRole = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
-//        Logger.info(signUpRequest.getUsername());
-//        Logger.info(strRoles);
 
-        if (strRoles == null) {
-//            Logger.info("inside null signup");
+        if (requestRole == null || requestRole.isEmpty() || requestRole.equals("user")) {
+            requestRole = "user";
             Role userRole = roleRepository.findByName(ERole.USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
-//            user.setRoles(roles);
-//            Owner user1 = ownerRepository.save(user);
-//            Owner nullUser = ownerRepository.findByEmail(user1.getEmail());
-//            ownerRepository.save(new Owner(nullUser.getUsername(), nullUser.getEmail(), nullUser.getRole(), nullUser.getPassword()));
 
-        } else if ("admin".equals(strRoles)){
+        } else if (requestRole.equals("admin")){
             Role adminRole = roleRepository.findByName(ERole.ADMIN)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(adminRole);
 
         }
         user.setRoles(roles);
+        user.setRole(requestRole);
         ownerRepository.save(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
@@ -109,9 +103,8 @@ public class AuthenticationController {
     /** Get information about all users **/
     @GetMapping("/owners")
     public ResponseEntity<List<Owner>> getAllUsers() {
-        List<Owner> users = new ArrayList<>();
         try {
-            ownerRepository.findAll().forEach(users::add);
+            List<Owner> users = new ArrayList<>(ownerRepository.findAll());
 
             if (users.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
