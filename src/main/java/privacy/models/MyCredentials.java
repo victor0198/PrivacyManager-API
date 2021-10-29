@@ -29,7 +29,7 @@ public class MyCredentials {
     private String login;
     private String password;
 
-    public MyCredentials(long userId, String service, String login, String password) {
+    public MyCredentials(Long userId, String service, String login, String password) {
         this.userId = userId;
         this.service = service;
         this.login = login;

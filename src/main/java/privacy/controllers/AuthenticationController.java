@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import privacy.dao.OwnerRepository;
 import privacy.dao.RoleRepository;
 import privacy.models.ERole;
+import privacy.models.MyCredentials;
 import privacy.models.Owner;
 import privacy.models.Role;
 import privacy.registration.payload.request.LoginRequest;
@@ -26,11 +27,26 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/** The controller receives and handles a request after it was filtered by OncePerRequestFilter.
+
+ > AuthController handles signup/login requests
+
+ – /api/auth/signup
+    >>check existing username/email
+    >>create new User (with ROLE_USER if not specifying role)
+    >>save User to database using UserRepository
+
+ – /api/auth/signin
+    >>authenticate { username, pasword }
+    >>update SecurityContext using Authentication object
+    >>generate JWT
+    >>get UserDetails from Authentication object
+    >>the response contains JWT and UserDetails data**/
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {
-    private static final org.slf4j.Logger Logger= LoggerFactory.getLogger(AuthenticationController.class);
+//    private static final org.slf4j.Logger Logger= LoggerFactory.getLogger(AuthenticationController.class);
 
     @Autowired
     PasswordEncoder encoder;
@@ -77,23 +93,21 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        Owner user = new Owner(signUpRequest.getUsername(),signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
+        Owner user = new Owner(signUpRequest.getUsername(),signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()), signUpRequest.getRole());
 
         String requestRole = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
         if (requestRole == null || requestRole.isEmpty() || requestRole.equals("user")) {
-            requestRole = "user";
+            requestRole = "USER";
             Role userRole = roleRepository.findByName(ERole.USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
-
-        } else if (requestRole.equals("admin")){
-            Role adminRole = roleRepository.findByName(ERole.ADMIN)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(adminRole);
-
         }
+//        else{
+//
+//        }
+
         user.setRoles(roles);
         user.setRole(requestRole);
         ownerRepository.save(user);
@@ -156,5 +170,6 @@ public class AuthenticationController {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
+
 
 }
