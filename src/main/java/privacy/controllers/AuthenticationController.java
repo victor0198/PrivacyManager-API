@@ -33,11 +33,11 @@ import java.util.stream.Collectors;
 
  – /api/auth/signup
     >>check existing username/email
-    >>create new User (with ROLE_USER if not specifying role)
+    >>create new User (as USER if there is no specified role)
     >>save User to database using UserRepository
 
  – /api/auth/signin
-    >>authenticate { username, pasword }
+    >>authenticate { username, password }
     >>update SecurityContext using Authentication object
     >>generate JWT
     >>get UserDetails from Authentication object
