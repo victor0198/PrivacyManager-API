@@ -13,4 +13,6 @@ public interface CredentialsRepository extends JpaRepository<MyCredentials, Long
         boolean existsByService(String service);
 
         Optional<MyCredentials> findById(Long credentialId);
+        Optional<MyCredentials> findAllByUserId(Long userId);
+
 }
