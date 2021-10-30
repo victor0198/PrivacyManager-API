@@ -8,11 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import privacy.dao.OwnerRepository;
 import privacy.models.Owner;
+/** The UserDetailsService interface has a method to load User by username and returns a UserDetails object
+ * that Spring Security can use for authentication and validation. **/
 @Service
 public class OwnerDetailsServiceImpl implements UserDetailsService {
     @Autowired
     OwnerRepository ownerRepository;
 
+    /** We override the loadUserByName method and get a full custom User object using UserRepository,
+     * then we build a UserDetails object using static build() method. **/
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

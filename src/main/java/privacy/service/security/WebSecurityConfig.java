@@ -25,14 +25,22 @@ import privacy.models.Owner;
 import privacy.service.security.jwt.AuthEntryPointJwt;
 import privacy.service.security.jwt.AuthTokenFilter;
 
+
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity  /** allows Spring
+ to find and automatically apply the class to the global Web Security. **/
 @EnableGlobalMethodSecurity(
         // securedEnabled = true,
         // jsr250Enabled = true,
-        prePostEnabled = true)
+        prePostEnabled = true)  /** provides AOP security on methods.
+ It enables @PreAuthorize, @PostAuthorize, it also supports JSR-250. **/
 @AllArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    /** Spring Security will load User details to perform authentication & authorization.
+     * So it has UserDetailsService interface that we need to implement.
+     * The implementation of UserDetailsService will be used for configuring DaoAuthenticationProvider
+     * by AuthenticationManagerBuilder.userDetailsService() method.
+     * We also need a PasswordEncoder for the DaoAuthenticationProvider. If we don’t specify, it will use plain text. **/
     @Autowired
     OwnerDetailsServiceImpl ownerDetailsService;
 
@@ -60,15 +68,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    /** We override the configure(HttpSecurity http) method from WebSecurityConfigurerAdapter interface. It tells Spring Security how
+     * we configure CORS and CSRF, when we want to require all users to be authenticated or not, which filter (AuthTokenFilter) and when
+     *  we want it to work (filter before UsernamePasswordAuthenticationFilter), which Exception Handler is chosen (AuthEntryPointJwt). **/
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.csrf().disable()
-//                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-//                .antMatchers("/api/test/**").permitAll()
-//                .anyRequest().authenticated();
-
         http
                 .csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()

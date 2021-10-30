@@ -12,6 +12,11 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 import privacy.service.security.OwnerDetailsImpl;
 
+/** This class has 3 funtions:
+
+ - generate a JWT from username, date, expiration, secret
+ - get username from JWT
+ - validate a JWT **/
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);

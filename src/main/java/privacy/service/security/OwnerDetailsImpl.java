@@ -15,6 +15,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/** This class contains necessary information (such as: username, password, authorities)
+ * to build an Authentication object.
+ * If the authentication process is successful, we can get User’s information
+ * such as username, password, authorities from an Authentication object. We
+ * create an implementation of the UserDetails interface to get more information. **/
 @AllArgsConstructor
 @Getter
 @Setter

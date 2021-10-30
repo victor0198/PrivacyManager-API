@@ -16,7 +16,6 @@ import java.util.Set;
 
 @Getter
 @Setter
-//@EqualsAndHashCode
 @NoArgsConstructor
 @Table
 @Entity
@@ -51,10 +50,11 @@ public class Owner implements UserDetails{
     private Set<Role> roles = new HashSet<>();
 
 
-    public Owner(String username, String email, String encode) {
+    public Owner(String username, String email, String encode, String role) {
         this.username = username;
         this.email = email+"@pm.com";
         this.password = encode;
+        this.role = role;
     }
 
     @Override

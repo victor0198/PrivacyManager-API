@@ -18,8 +18,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import privacy.service.security.OwnerDetailsServiceImpl;
 
-//import com.pack.ServerSide.security.services.UserDetailsServiceImpl;
-
+/** This class makes a single execution for each request to our API. It provides a doFilterInternal() method
+ * that we will implement parsing & validating JWT, loading User details (using UserDetailsService), checking
+ * Authorizaion (using UsernamePasswordAuthenticationToken). **/
 public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtils jwtUtils;
@@ -29,6 +30,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
+    /** The function below enables us to:
+     *  – get JWT from the Authorization header (by removing Bearer prefix);
+     – if the request has JWT, validate it, parse username from it;
+     – from username, get UserDetails to create an Authentication object;
+     – set the current UserDetails in SecurityContext using setAuthentication(authentication) method. **/
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -43,6 +49,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                /** After this, everytime you want to get UserDetails, just use SecurityContext like this:
+                 * UserDetails userDetails =
+                 * 	(UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();**/
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: "+e);
