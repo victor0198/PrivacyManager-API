@@ -7,16 +7,16 @@ import java.util.List;
 
 @AllArgsConstructor
 public class JwtResponse {
+    private Long ownerId;
     private String token;
     private String type = "Bearer";
-    private Long id;
     private String username;
     private String email;
     private List<String> roles;
 
     public JwtResponse(String accessToken, Long id, String username, String email, List<String> roles) {
         this.token = accessToken;
-        this.id = id;
+        this.ownerId = id;
         this.username = username;
         this.email = email;
         this.roles = roles;
@@ -36,12 +36,12 @@ public class JwtResponse {
         this.type = tokenType;
     }
 
-    public Long getId() {
-        return id;
+    public Long getOwnerId() {
+        return ownerId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setOwnerId(Long id) {
+        this.ownerId = id;
     }
 
     public String getEmail() {

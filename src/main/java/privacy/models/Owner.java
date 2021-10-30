@@ -38,7 +38,6 @@ public class Owner implements UserDetails{
     @Column(nullable = false, unique = true)
     private String email;
     private String password;
-    private String role;
     private Boolean enabled = true;
     private Boolean notLocked = true;
     /** A user may have more than one role, so we create a
@@ -50,11 +49,10 @@ public class Owner implements UserDetails{
     private Set<Role> roles = new HashSet<>();
 
 
-    public Owner(String username, String email, String encode, String role) {
+    public Owner(String username, String email, String encode) {
         this.username = username;
         this.email = email+"@pm.com";
         this.password = encode;
-        this.role = role;
     }
 
     @Override

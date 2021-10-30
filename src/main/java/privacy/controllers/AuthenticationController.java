@@ -81,37 +81,23 @@ public class AuthenticationController {
                 new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
     }
 
-    /** Sign up request
-     * To do: The new Owner(...) returns an error that need to be solved **/
+    /** Sign up request **/
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (ownerRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
         }
 
-        if (ownerRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-        }
+        Owner user = new Owner(signUpRequest.getUsername(),signUpRequest.getUsername(), encoder.encode(signUpRequest.getPassword()));
 
-        Owner user = new Owner(signUpRequest.getUsername(),signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()), signUpRequest.getRole());
-
-        String requestRole = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
-
-        if (requestRole == null || requestRole.isEmpty() || requestRole.equals("user")) {
-            requestRole = "USER";
-            Role userRole = roleRepository.findByName(ERole.USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        }
-//        else{
-//
-//        }
+        Role userRole = roleRepository.findByName(ERole.USER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(userRole);
 
         user.setRoles(roles);
-        user.setRole(requestRole);
         ownerRepository.save(user);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.ok(user);
     }
 
     /** Get information about all users **/
