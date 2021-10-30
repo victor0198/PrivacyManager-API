@@ -39,7 +39,6 @@ public class Owner implements UserDetails{
     @Column(nullable = false, unique = true)
     private String email;
     private String password;
-    private String role;
     private Boolean enabled = true;
     private Boolean notLocked = true;
     /** A user may have more than one role, so we create a

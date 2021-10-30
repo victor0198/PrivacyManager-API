@@ -20,28 +20,11 @@ public class SignupRequest {
     private String username;
 
     @NotBlank
-    @Size(max = 50)
-    @Email
-    private String email;
-
-    String role;
-
-    @NotBlank
     @Size(min = 6, max = 40)
     private String password;
 
-    public void setEmail(@NotBlank
-                         @Size(max = 50)
-                         @Email String email){
-        this.email = email + "@pm.com";
-    }
-
     public void setUsername(@NotBlank @Size(min = 3, max = 20) String username) {
         this.username = username;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public void setPassword(@NotBlank @Size(min = 6, max = 40) String password) {
