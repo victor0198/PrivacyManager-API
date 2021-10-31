@@ -13,7 +13,11 @@ import java.util.Optional;
 public interface CredentialsRepository extends JpaRepository<MyCredentials, Long> {
         boolean existsByService(String service);
 
+        /** Find a credential by its id **/
         Optional<MyCredentials> findById(Long credentialId);
-        List<MyCredentials> findAllByUserId(Long userId);
+
+        /** View all the specified user's credentials **/
+        List<MyCredentials> findByUserId(Long userId);
+
 
 }
