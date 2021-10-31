@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CredentialRequest {
     private Long userId;
+    private Long credentialId;
     private String service;
     private String login;
     private String password;

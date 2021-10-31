@@ -13,6 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class MyCredentials {
 
+    @Id
     @SequenceGenerator(
             name = "credential_sequence",
             sequenceName = "credential_sequence",
@@ -22,15 +23,16 @@ public class MyCredentials {
             strategy = GenerationType.SEQUENCE,
             generator = "credential_sequence"
     )
-    @Id
+    private long recordId;
     private long credentialId;
     private long userId;
     private String service;
     private String login;
     private String password;
 
-    public MyCredentials(Long userId, String service, String login, String password) {
+    public MyCredentials(Long userId, Long credentialId, String service, String login, String password) {
         this.userId = userId;
+        this.credentialId = credentialId;
         this.service = service;
         this.login = login;
         this.password = password;
