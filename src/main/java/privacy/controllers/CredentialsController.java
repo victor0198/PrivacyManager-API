@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import privacy.dao.CredentialsRepository;
 import privacy.dao.OwnerRepository;
 import privacy.models.MyCredentials;
-import privacy.registration.payload.request.CredentialRequest;
+import privacy.general.payload.request.CredentialRequest;
 import privacy.registration.payload.response.MessageResponse;
 import java.util.ArrayList;
 import java.util.List;

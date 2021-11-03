@@ -1,4 +1,4 @@
-package privacy.registration.payload.response;
+package privacy.general.payload.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
