@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 //import com.pack.ServerSide.security.services.UserDetailsImpl;
 
 import io.jsonwebtoken.*;
-import privacy.service.security.OwnerDetailsImpl;
+import privacy.service.security.services.OwnerDetailsImpl;
 
 /** This class has 3 funtions:
 
