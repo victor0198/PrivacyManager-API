@@ -1,5 +1,4 @@
 package privacy.controllers;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,14 +12,13 @@ import org.springframework.web.bind.annotation.*;
 import privacy.dao.OwnerRepository;
 import privacy.dao.RoleRepository;
 import privacy.models.ERole;
-import privacy.models.MyCredentials;
 import privacy.models.Owner;
 import privacy.models.Role;
 import privacy.registration.payload.request.LoginRequest;
 import privacy.registration.payload.request.SignupRequest;
 import privacy.registration.payload.response.JwtResponse;
 import privacy.registration.payload.response.MessageResponse;
-import privacy.service.security.OwnerDetailsImpl;
+import privacy.service.security.services.OwnerDetailsImpl;
 import privacy.service.security.jwt.JwtUtils;
 
 import javax.validation.Valid;

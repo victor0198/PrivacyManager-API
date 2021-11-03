@@ -1,4 +1,4 @@
-package privacy.registration.payload.request;
+package privacy.general.payload.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

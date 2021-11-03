@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import privacy.service.security.OwnerDetailsServiceImpl;
+import privacy.service.security.services.OwnerDetailsServiceImpl;
 
 /** This class makes a single execution for each request to our API. It provides a doFilterInternal() method
  * that we will implement parsing & validating JWT, loading User details (using UserDetailsService), checking
