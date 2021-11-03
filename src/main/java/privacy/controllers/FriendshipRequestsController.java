@@ -24,11 +24,13 @@ public class FriendshipRequestsController {
     private OwnerRepository ownerRepository;
 
 
-    /** Function to register new credential **/
-    @PostMapping("/new_fr_request")
+    /**
+     * Function to register new credential
+     **/
+    @PostMapping("/send_new_fr_request")
 
     public ResponseEntity<?> registerRequest(@RequestBody FriendshipRequestCreated frRequest) {
-        if (friendshipRequestsRepository.findBySenderId(frRequest.getSenderId()).contains(frRequest.getReceiverId())){
+        if (friendshipRequestsRepository.findBySenderId(frRequest.getSenderId()).contains(frRequest.getReceiverId())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Request is already sent!"));
         }
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -47,7 +49,7 @@ public class FriendshipRequestsController {
 
     }
 
-    @GetMapping("/received_fr_requests")
+    @GetMapping("/sent_fr_requests")
     public ResponseEntity<List<FriendshipRequestCreated>> getAllFrRequests() {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
@@ -65,13 +67,4 @@ public class FriendshipRequestsController {
         }
     }
 
-    @DeleteMapping("/received_fr_requests/{requestId}")
-    public ResponseEntity<HttpStatus> deleteCredential(@PathVariable("requestId") long id) {
-        try {
-            friendshipRequestsRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-        }
-    }
 }
