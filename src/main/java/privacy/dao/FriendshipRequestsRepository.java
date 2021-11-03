@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import privacy.models.new_friend.FriendshipRequestCreated;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @Transactional(readOnly = true)

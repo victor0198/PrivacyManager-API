@@ -25,7 +25,7 @@ public class FriendshipRequestsController {
 
 
     /**
-     * Function to register new credential
+     * Function to register new friend request
      **/
     @PostMapping("/send_new_fr_request")
 
