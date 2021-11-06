@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import privacy.models.new_friend.FriendshipRequestAccepted;
 import privacy.models.new_friend.FriendshipRequestCreated;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -14,6 +15,5 @@ public interface FriendshipRequestsRepository extends JpaRepository<FriendshipRe
     List<FriendshipRequestCreated> findBySenderId(long senderId);
 
     List<FriendshipRequestCreated> findFriendshipRequestCreatedByReceiverId(long receiverId);
-
 
 }

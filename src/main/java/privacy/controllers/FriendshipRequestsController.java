@@ -50,12 +50,30 @@ public class FriendshipRequestsController {
     }
 
     @GetMapping("/sent_fr_requests")
-    public ResponseEntity<List<FriendshipRequestCreated>> getAllFrRequests() {
+    public ResponseEntity<List<FriendshipRequestCreated>> getAllSentFrRequests() {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
         List<FriendshipRequestCreated> requestsList = new ArrayList<>();
         try {
             requestsList.addAll(friendshipRequestsRepository.findBySenderId(userId));
+
+            if (requestsList.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(requestsList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/received_fr_requests")
+    public ResponseEntity<List<FriendshipRequestCreated>> getAllReceivedFrRequests() {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
+        List<FriendshipRequestCreated> requestsList = new ArrayList<>();
+        try {
+            requestsList.addAll(friendshipRequestsRepository.findFriendshipRequestCreatedByReceiverId(userId));
 
             if (requestsList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);

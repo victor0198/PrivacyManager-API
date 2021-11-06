@@ -13,6 +13,7 @@ import privacy.registration.payload.response.MessageResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -37,7 +38,7 @@ public class FriendshipResponseController{
 
         frResponse.setRequestAccepter(currentUserId);
 
-        if (frResponse.getStatus() == "ACCEPT") {
+        if (Objects.equals(frResponse.getStatus(), "ACCEPT")) {
 
             FriendshipRequestAccepted friendshipRequestResponse = new FriendshipRequestAccepted(
                     frResponse.getResponseToRequestId(),
@@ -62,13 +63,13 @@ public class FriendshipResponseController{
 
     }
 
-    @GetMapping("/received_fr_requests")
+    @GetMapping("/answered_fr_requests")
     public ResponseEntity<List<FriendshipRequestAccepted>> getAllByRequests() {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Long accepterId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
         List<FriendshipRequestAccepted> requestsList = new ArrayList<>();
         try {
-            requestsList.addAll(friendshipResponsesRepository.getAllByRequestAccepter(currentUser));
+            requestsList.addAll(friendshipResponsesRepository.getAllByRequestAccepter(accepterId));
 
             if (requestsList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);

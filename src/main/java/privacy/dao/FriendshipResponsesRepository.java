@@ -10,8 +10,8 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface FriendshipResponsesRepository extends JpaRepository<FriendshipRequestAccepted, String> {
+public interface FriendshipResponsesRepository extends JpaRepository<FriendshipRequestAccepted, Long> {
 //    List<FriendshipRequestAccepted> findFriendshipRequestAcceptedByRequestAccepter(Long accepterId);
 
-    List<FriendshipRequestAccepted> getAllByRequestAccepter(String accepterId);
+    List<FriendshipRequestAccepted> getAllByRequestAccepter(long requestAccepter);
 }
