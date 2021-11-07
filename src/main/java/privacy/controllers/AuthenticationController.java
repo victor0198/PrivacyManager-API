@@ -109,7 +109,7 @@ public class AuthenticationController {
             }
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
     }
 

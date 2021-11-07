@@ -20,6 +20,23 @@ import java.util.Objects;
 import static privacy.models.new_friend.EStatus.ACCEPT;
 import static privacy.models.new_friend.EStatus.REJECT;
 
+/** Friendship requests and answers:
+
+ Send a request as user 1 (for example), on localhost:8080/api/send_new_fr_request:
+ {
+ "receiverId": 4,
+ "publicKey": "publicKeyFrom6to8"
+ }
+ As user 4:
+ Check your requests on localhost:8080/api/received_fr_requests; //the status of the request is set to PENDING in the requests table
+ Answer a request on localhost:8080/api/answer_new_fr_request:
+ {
+ "frInitiatorId":1,
+ "symmetricKey":"symmetricKey4For1",
+ "status":"ACCEPT" //or REJECT, in which case - no symmetric key will be saved
+ }
+ The sent request gets deleted from the firs table - fr_request_created - and the answer is saved in the second table
+ - of fr_request_accepted, containing the status - ACCEPT or REJECT **/
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api")
@@ -37,7 +54,6 @@ public class FriendshipResponseController{
     /**
      * Function to register new friend request
      **/
-//    @DeleteMapping("/answer_new_fr_request")
     @PostMapping("/answer_new_fr_request")
 
     public ResponseEntity<?> registerResponse(@RequestBody FriendshipRequestAccepted frResponse) {
@@ -89,7 +105,7 @@ public class FriendshipResponseController{
 
             return new ResponseEntity<>(requestsList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
     }
 }

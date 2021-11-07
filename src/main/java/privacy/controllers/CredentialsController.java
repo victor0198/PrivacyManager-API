@@ -66,7 +66,7 @@ public class CredentialsController {
 
             return new ResponseEntity<>(credentials, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
     }
 
