@@ -15,5 +15,7 @@ public interface FriendshipRequestsRepository extends JpaRepository<FriendshipRe
     List<FriendshipRequestCreated> findBySenderId(long senderId);
 
     List<FriendshipRequestCreated> findFriendshipRequestCreatedByReceiverId(long receiverId);
+    FriendshipRequestCreated findFriendshipRequestCreatedBySenderIdAndReceiverId(long senderId, long receiverId);
+    void deleteFriendshipRequestCreatedBySenderIdAndReceiverId(long senderId, long receiverId);
 
 }

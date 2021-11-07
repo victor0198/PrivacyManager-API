@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CredentialResponse {
-    private long userId;
+    private long ownerId;
     private String service;
     private String login;
     private String password;

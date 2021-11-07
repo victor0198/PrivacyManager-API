@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+import static privacy.models.new_friend.EStatus.PENDING;
+
 @Entity
 @Getter
 @Setter
@@ -27,4 +29,14 @@ public class FriendshipRequestCreated {
     private long senderId;
     private long receiverId;
     private String publicKey;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private EStatus status = PENDING;
+
+    public FriendshipRequestCreated(long createdRequestId, long senderId, long receiverId, String publicKey) {
+        this.createdRequestId = createdRequestId;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.publicKey = publicKey;
+    }
 }

@@ -1,5 +1,6 @@
 package privacy.general.payload.response;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
