@@ -28,12 +28,16 @@ public class CredentialsController {
     @PostMapping("/new_credential")
 
     public ResponseEntity<?> registerCredential(@RequestBody CredentialRequest credentialRequest) {
-        if (credentialsRepository.findByUserId(credentialRequest.getUserId()).contains(credentialRequest.getService())){
+        if (credentialsRepository.findMyCredentialsByOwnerId(credentialRequest.getOwnerId()).contains(credentialRequest.getService())){
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Credential is already registered!"));
         }
 
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long currentUserId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
 
-        MyCredentials credential = new MyCredentials(credentialRequest.getUserId(),
+        credentialRequest.setOwnerId(currentUserId);
+
+        MyCredentials credential = new MyCredentials(credentialRequest.getOwnerId(),
                 credentialRequest.getCredentialId(),
                 credentialRequest.getService(),
                 credentialRequest.getLogin(),
@@ -54,7 +58,7 @@ public class CredentialsController {
         Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
         List<MyCredentials> credentials = new ArrayList<MyCredentials>();
         try {
-            credentials.addAll(credentialsRepository.findByUserId(userId));
+            credentials.addAll(credentialsRepository.findMyCredentialsByOwnerId(userId));
 
             if (credentials.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -62,14 +66,18 @@ public class CredentialsController {
 
             return new ResponseEntity<>(credentials, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
     }
 
-    @DeleteMapping("/my_credentials/{credentialId}")
+
+
+    @DeleteMapping("/delete_credential/{credentialId}")
     public ResponseEntity<HttpStatus> deleteCredential(@PathVariable("credentialId") long id) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long currentUserId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
         try {
-            credentialsRepository.deleteById(id);
+            credentialsRepository.deleteMyCredentialsByOwnerIdAndCredentialId(currentUserId, id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
