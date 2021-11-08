@@ -15,5 +15,4 @@ public class CredentialRequest {
     private String service;
     private String login;
     private String password;
-
 }

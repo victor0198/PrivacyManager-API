@@ -1,2 +1,4 @@
-package privacy.general.payload.request;public class SearchOwnerRequest {
+package privacy.general.payload.request;
+
+public class SearchOwnerRequest {
 }

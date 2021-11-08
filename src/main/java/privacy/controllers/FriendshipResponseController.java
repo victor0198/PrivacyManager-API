@@ -1,5 +1,6 @@
 package privacy.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,16 +40,15 @@ import static privacy.models.new_friend.EStatus.REJECT;
  - of fr_request_accepted, containing the status - ACCEPT or REJECT **/
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class FriendshipResponseController{
 
-    @Autowired
-    private FriendshipResponsesRepository friendshipResponsesRepository;
+    private final FriendshipResponsesRepository friendshipResponsesRepository;
 
-    @Autowired
-    private FriendshipRequestsRepository friendshipRequestsRepository;
-    @Autowired
-    private OwnerRepository ownerRepository;
+    private final FriendshipRequestsRepository friendshipRequestsRepository;
+
+    private final OwnerRepository ownerRepository;
 
 
     /**

@@ -1,12 +1,16 @@
 package privacy.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import privacy.dao.FriendshipRequestsRepository;
 import privacy.dao.OwnerRepository;
+import privacy.general.payload.response.FriendshipRequests;
 import privacy.models.new_friend.FriendshipRequestCreated;
 import privacy.registration.payload.response.MessageResponse;
 
@@ -32,13 +36,13 @@ import java.util.List;
  - of fr_request_accepted, containing the status - ACCEPT or REJECT **/
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class FriendshipRequestsController {
-    @Autowired
-    private FriendshipRequestsRepository friendshipRequestsRepository;
 
-    @Autowired
-    private OwnerRepository ownerRepository;
+    private final FriendshipRequestsRepository friendshipRequestsRepository;
+
+    private final OwnerRepository ownerRepository;
 
 
     /**
@@ -85,21 +89,20 @@ public class FriendshipRequestsController {
     }
 
     @GetMapping("/received_fr_requests")
-    public ResponseEntity<List<FriendshipRequestCreated>> getAllReceivedFrRequests() {
+    public ResponseEntity<FriendshipRequests> getAllReceivedFrRequests() {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
         List<FriendshipRequestCreated> requestsList = new ArrayList<>();
-        try {
-            requestsList.addAll(friendshipRequestsRepository.findFriendshipRequestCreatedByReceiverId(userId));
+        requestsList.addAll(friendshipRequestsRepository.findFriendshipRequestCreatedByReceiverId(userId));
 
-            if (requestsList.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
+        FriendshipRequests frReq = new FriendshipRequests();
+        frReq.setNotificationsList(requestsList);
 
-            return new ResponseEntity<>(requestsList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        if (requestsList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+
+        return new ResponseEntity<>(frReq, HttpStatus.OK);
     }
 
 }

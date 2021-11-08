@@ -25,12 +25,8 @@ public class MyKeys {
     @Id
     private long keyId;
     private String filename;
+    @Column(length=2000)
     private String fileKey;
     private String fileChecksum;
 
-    public MyKeys(String filename, String fileKey, String fileChecksum) {
-        this.filename = filename;
-        this.fileKey = fileKey;
-        this.fileChecksum = fileChecksum;
-    }
 }
