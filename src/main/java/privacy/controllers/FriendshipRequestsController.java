@@ -58,9 +58,11 @@ public class FriendshipRequestsController {
         Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
 
         frRequest.setSenderId(userId);
+        frRequest.setSenderUsername(currentUser);
 
         FriendshipRequestCreated friendshipRequestCreated = new FriendshipRequestCreated(frRequest.getCreatedRequestId(),
                 frRequest.getSenderId(),
+                frRequest.getSenderUsername(),
                 frRequest.getReceiverId(),
                 frRequest.getPublicKey());
 
