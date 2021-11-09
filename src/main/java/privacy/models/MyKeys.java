@@ -12,25 +12,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MyKeys {
-//    @SequenceGenerator(
-//            name = "key_sequence",
-//            sequenceName = "key_sequence",
-//            allocationSize = 1
-//    )
-//    @GeneratedValue(
-//            strategy = GenerationType.SEQUENCE,
-//            generator = "_sequence"
-//    )
-//    private long id;
     @Id
-    private long keyId;
-    private String filename;
+    private Long keyId;
+    private Long userId;
     private String fileKey;
     private String fileChecksum;
-
-    public MyKeys(String filename, String fileKey, String fileChecksum) {
-        this.filename = filename;
-        this.fileKey = fileKey;
-        this.fileChecksum = fileChecksum;
-    }
 }
