@@ -15,6 +15,7 @@ public class MyKeys {
     @Id
     private Long keyId;
     private Long userId;
+    @Column(length=2000)
     private String fileKey;
     private String fileChecksum;
 }

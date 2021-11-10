@@ -12,6 +12,7 @@ import lombok.Setter;
 public class FriendshipRequest {
     private long createdRequestId;
     private long senderId;
+    private String username;
     private long receiverId;
     private String publicKey;
 }

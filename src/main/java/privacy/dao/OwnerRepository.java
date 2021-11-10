@@ -3,6 +3,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import privacy.models.Owner;
+
+import java.util.List;
 import java.util.Optional;
 
 /** This repository persists and enables access to information about owners. It extends
@@ -14,8 +16,11 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
 
     Optional<Owner> findOwnerByUsername(String ownerUsername);
 
+    Optional<Owner> findOwnerByUsernameContaining(String ownerUsername);
+
+    List<Owner> findAllByUsernameContaining(String ownerUsername);
+
     Boolean existsByUsername(String username);
 
-    Boolean existsByEmail(String email);
 
 }
