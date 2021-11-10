@@ -1,4 +1,6 @@
 package privacy.controllers;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +15,18 @@ import privacy.dao.OwnerRepository;
 import privacy.dao.RoleRepository;
 import privacy.models.ERole;
 import privacy.models.Owner;
+import privacy.models.RefreshToken;
 import privacy.models.Role;
 import privacy.registration.payload.request.LoginRequest;
 import privacy.registration.payload.request.SignupRequest;
 import privacy.registration.payload.response.JwtResponse;
 import privacy.registration.payload.response.MessageResponse;
+import privacy.service.security.jwt.TokenRefreshException;
+import privacy.service.security.jwt.payload.requests.TokenRefreshRequest;
+import privacy.service.security.jwt.payload.responses.TokenRefreshResponse;
 import privacy.service.security.services.OwnerDetailsImpl;
 import privacy.service.security.jwt.JwtUtils;
+import privacy.service.security.services.RefreshTokenService;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -42,23 +49,22 @@ import java.util.stream.Collectors;
     >>the response contains JWT and UserDetails data**/
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthenticationController {
-//    private static final org.slf4j.Logger Logger= LoggerFactory.getLogger(AuthenticationController.class);
+    private static final org.slf4j.Logger Logger= LoggerFactory.getLogger(AuthenticationController.class);
 
-    @Autowired
-    PasswordEncoder encoder;
+    private final PasswordEncoder encoder;
 
-    @Autowired
-    RoleRepository roleRepository;
+    private final RefreshTokenService refreshTokenService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private JwtUtils jwtUtils;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private OwnerRepository ownerRepository;
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtUtils jwtUtils;
+
+    private final OwnerRepository ownerRepository;
 
 
     /** Sign in request **/
@@ -69,14 +75,33 @@ public class AuthenticationController {
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
 
         OwnerDetailsImpl userDetails = (OwnerDetailsImpl) authentication.getPrincipal();
+
+        String jwt = jwtUtils.generateJwtToken(userDetails);
+
         List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
         return ResponseEntity.ok(
-                new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+                new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+    }
+
+    @PostMapping("/refreshtoken")
+    public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getOwner)
+                .map(user -> {
+                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        "Refresh token is not in database!"));
     }
 
     /** Sign up request **/
@@ -98,62 +123,6 @@ public class AuthenticationController {
         return ResponseEntity.ok(user);
     }
 
-    /** Get information about all users **/
-    @GetMapping("/owners")
-    public ResponseEntity<List<Owner>> getAllUsers() {
-        try {
-            List<Owner> users = new ArrayList<>(ownerRepository.findAll());
-
-            if (users.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /** Delete all users **/
-    @DeleteMapping("/owners")
-    public ResponseEntity<HttpStatus> deleteAllUsers() {
-        try {
-            ownerRepository.deleteAll();
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-        }
-
-    }
-//    @PostMapping
-//    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody LoginRequest loginRequest) {
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        String jwt = jwtUtil.generateToken(authentication);
-//
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//        List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-//        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
-//    }
-
-    /** Find user by their id **/
-    @GetMapping("/owners/{ownerId}")
-    public ResponseEntity<Owner> getUsersById(@PathVariable("ownerId") long id) {
-        Optional<Owner> userData = ownerRepository.findById(id);
-
-        return userData.map(owner -> new ResponseEntity<>(owner, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    /** Delete user by their id **/
-    @DeleteMapping("/owners/{ownerId}")
-    public ResponseEntity<HttpStatus> deleteUser(@PathVariable("ownerId") long id) {
-        try {
-            ownerRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-        }
-    }
 
 
 }
