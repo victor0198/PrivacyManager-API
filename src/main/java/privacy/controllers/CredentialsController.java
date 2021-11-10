@@ -1,4 +1,5 @@
 package privacy.controllers;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,18 +16,21 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class CredentialsController {
-    @Autowired
-    private CredentialsRepository credentialsRepository;
+    private final CredentialsRepository credentialsRepository;
 
-    @Autowired
-    private OwnerRepository ownerRepository;
+    private final OwnerRepository ownerRepository;
 
 
-    /** Function to register new credential **/
+    /**
+     *  Function to register new credential
+     *
+     * @param credentialRequest
+     * @return credential object
+     */
     @PostMapping("/new_credential")
-
     public ResponseEntity<?> registerCredential(@RequestBody CredentialRequest credentialRequest) {
         if (credentialsRepository.findMyCredentialsByOwnerId(credentialRequest.getOwnerId()).contains(credentialRequest.getService())){
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Credential is already registered!"));

@@ -1,5 +1,6 @@
 package privacy.service.security;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,14 +20,13 @@ import privacy.service.security.services.OwnerDetailsServiceImpl;
 
 
 @Configuration
-@EnableWebSecurity  /** allows Spring
- to find and automatically apply the class to the global Web Security. **/
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(
         // securedEnabled = true,
         // jsr250Enabled = true,
-        prePostEnabled = true)  /** provides AOP security on methods.
- It enables @PreAuthorize, @PostAuthorize, it also supports JSR-250. **/
+        prePostEnabled = true)
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     /** Spring Security will load User details to perform authentication & authorization.
      * So it has UserDetailsService interface that we need to implement.
