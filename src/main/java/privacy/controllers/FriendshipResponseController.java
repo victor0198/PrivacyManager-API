@@ -6,9 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import privacy.dao.FriendshipRepository;
 import privacy.dao.FriendshipRequestsRepository;
 import privacy.dao.FriendshipResponsesRepository;
 import privacy.dao.OwnerRepository;
+import privacy.models.Friendship;
 import privacy.models.new_friend.EStatus;
 import privacy.models.new_friend.FriendshipRequestAccepted;
 import privacy.models.new_friend.FriendshipRequestCreated;
@@ -48,6 +50,8 @@ public class FriendshipResponseController{
 
     private final FriendshipRequestsRepository friendshipRequestsRepository;
 
+    private final FriendshipRepository friendshipRepository;
+
     private final OwnerRepository ownerRepository;
 
 
@@ -75,7 +79,8 @@ public class FriendshipResponseController{
             friendshipResponsesRepository.save(friendshipRequestResponse);
             FriendshipRequestCreated answered = friendshipRequestsRepository.findFriendshipRequestCreatedBySenderIdAndReceiverId(frResponse.getFrInitiatorId(), frResponse.getRequestAccepter());
             answered.setStatus(ACCEPT);
-            friendshipRequestsRepository.save(answered);
+            friendshipRequestsRepository.delete(answered);
+            friendshipRepository.save(new Friendship(friendshipRequestResponse.getRequestAccepter(), friendshipRequestResponse.getFrInitiatorId()));
             return ResponseEntity.ok(friendshipRequestResponse);
         }else{
             FriendshipRequestAccepted friendshipRequestResponse = new FriendshipRequestAccepted(

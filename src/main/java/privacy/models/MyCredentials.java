@@ -23,9 +23,9 @@ public class MyCredentials {
             strategy = GenerationType.SEQUENCE,
             generator = "credential_sequence"
     )
-    private long recordId;
-    private long credentialId;
-    private long ownerId;
+    private Long recordId;
+    private Long credentialId;
+    private Long ownerId;
     private String service;
     private String login;
     private String password;
