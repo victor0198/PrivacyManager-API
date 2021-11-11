@@ -92,7 +92,7 @@ public class FriendshipResponseController{
             friendshipResponsesRepository.save(friendshipRequestResponse);
             FriendshipRequestCreated answered = friendshipRequestsRepository.findFriendshipRequestCreatedBySenderIdAndReceiverId(frResponse.getFrInitiatorId(), frResponse.getRequestAccepter());
             friendshipRequestsRepository.delete(answered);
-            return ResponseEntity.ok("Friendship rejected");
+            return ResponseEntity.ok(friendshipRequestResponse);
         }
     }
 

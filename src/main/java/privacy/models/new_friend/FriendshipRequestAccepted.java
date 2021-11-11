@@ -28,6 +28,7 @@ public class FriendshipRequestAccepted {
     private long responseToRequestId;
     private long frInitiatorId;
     private long requestAccepter;
+    @Column(columnDefinition="TEXT")
     private String symmetricKey;
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
