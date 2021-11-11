@@ -37,6 +37,7 @@ public class FriendshipRequestCreated {
     private long senderId;
     private String senderUsername;
     private long receiverId;
+    @Column(columnDefinition="TEXT")
     private String publicKey;
     @Enumerated(EnumType.STRING)
     @Column(length = 20)

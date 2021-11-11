@@ -8,5 +8,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class SearchAllOwnersRequest {
+    private Long userId;
     private String userName;
 }

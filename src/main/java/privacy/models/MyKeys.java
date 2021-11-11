@@ -25,7 +25,7 @@ public class MyKeys {
     @Id
     private long keyId;
     private String filename;
-    @Column(length=2000)
+    @Column(columnDefinition="TEXT")
     private String fileKey;
     private String fileChecksum;
 
