@@ -8,13 +8,9 @@ import javax.persistence.*;
 @ToString
 @Getter
 @Setter
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-//@Data
 public class Friendship {
-
-
     @SequenceGenerator(
             name = "friendship_sequence",
             sequenceName = "friendship_sequence",
@@ -25,12 +21,12 @@ public class Friendship {
             generator = "friendship_sequence"
     )
     @Id
-    private long friendshipId;
-    private long userOneId;
-    private long userTwoId;
+    private Long friendshipId;
+    private Long userOneId;
+    private Long userTwoId;
 
-    public Friendship(long userOneId, long userTwoId) {
-        this.userOneId = userOneId;
-        this.userTwoId = userTwoId;
+    public Friendship(Long requestAccepter, Long frInitiatorId) {
+        this.userOneId = requestAccepter;
+        this.userTwoId = frInitiatorId;
     }
 }

@@ -14,7 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class SharedKeys implements Serializable {
     @Id
-    private long cloudKeyId;
+    private Long cloudKeyId;
     @Id
-    private long friendshipId;
+    private Long friendshipId;
 }

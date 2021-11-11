@@ -18,4 +18,5 @@ public class MyKeys {
     @Column(columnDefinition="TEXT")
     private String fileKey;
     private String fileChecksum;
+
 }

@@ -1,4 +1,5 @@
 package privacy.models;
+import jdk.jfr.Timestamp;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,7 +10,6 @@ import javax.persistence.*;
 @Setter
 //@EqualsAndHashCode
 @NoArgsConstructor
-//@AllArgsConstructor
 public class CloudKeys {
     @Id
     @SequenceGenerator(
@@ -21,6 +21,7 @@ public class CloudKeys {
             strategy = GenerationType.SEQUENCE,
             generator = "cl_key_sequence"
     )
+
     private long cloudKeyId;
     private long ownerId;
     private long keyId;
