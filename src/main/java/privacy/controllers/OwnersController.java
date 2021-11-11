@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import privacy.dao.CredentialsRepository;
 import privacy.dao.OwnerRepository;
 import privacy.general.payload.request.SearchAllOwnersRequest;
+import privacy.general.payload.response.SearchOwnerResponse;
 import privacy.models.Owner;
 
 import java.util.ArrayList;
@@ -58,12 +59,15 @@ public class OwnersController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             for (Owner ow : users){
-                SearchAllOwnersRequest sao = new SearchAllOwnersRequest(ow.getUsername());
+                SearchAllOwnersRequest sao = new SearchAllOwnersRequest(ow.getOwnerId(), ow.getUsername());
                 saoList.add(sao);
             }
-            return new ResponseEntity<>(saoList, HttpStatus.OK);
+
+            SearchOwnerResponse searchOwnerResponse = new SearchOwnerResponse();
+            searchOwnerResponse.setUsersFound(saoList);
+            return new ResponseEntity<>(searchOwnerResponse, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 
