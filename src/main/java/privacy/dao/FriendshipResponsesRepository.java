@@ -14,4 +14,6 @@ public interface FriendshipResponsesRepository extends JpaRepository<FriendshipR
 //    List<FriendshipRequestAccepted> findFriendshipRequestAcceptedByRequestAccepter(Long accepterId);
 
     List<FriendshipRequestAccepted> getAllByRequestAccepter(long requestAccepter);
+
+    List<FriendshipRequestAccepted> getAllByFrInitiatorId(long frInitiatorId);
 }
