@@ -1,6 +1,8 @@
 package privacy.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +16,7 @@ import privacy.general.payload.response.FriendshipResponseItem;
 import privacy.models.Friendship;
 import privacy.models.new_friend.FriendshipRequestAccepted;
 import privacy.models.new_friend.FriendshipRequestCreated;
+import privacy.service.security.jwt.AuthEntryPointJwt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +39,13 @@ import static privacy.models.new_friend.EStatus.ACCEPT;
  "status":"ACCEPT" //or REJECT, in which case - no symmetric key will be saved
  }
  The sent request gets deleted from the firs table - fr_request_created - and the answer is saved in the second table
- - of fr_request_accepted, containing the status - ACCEPT or REJECT **/
+ - of fr_request_accepted, containing the status - ACCEPT or REJECT */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class FriendshipResponseController{
+    private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
     private final FriendshipResponsesRepository friendshipResponsesRepository;
 
@@ -53,8 +57,12 @@ public class FriendshipResponseController{
 
 
     /**
-     * Function to register new friend request
-     **/
+     * @param frResponse containing info about the current user's Id, the friendship's initiator Id, the symmetric key
+     * being sent and the ACCEPT or REJECT status of the response
+     * @return a ResponseEntity containing info about the newly registered friendship (from an object of type Friendship)
+     * if the receiver accepts the friendship, or an object of type FriendshipRequestCreated with the status set to REJECT,
+     * in case the receiver rejects the request
+     */
     @PostMapping("/answer_new_fr_request")
 
     public ResponseEntity<?> registerResponse(@RequestBody FriendshipRequestAccepted frResponse) {
@@ -62,7 +70,6 @@ public class FriendshipResponseController{
         Long currentUserId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
 
         frResponse.setRequestAccepter(currentUserId);
-        System.out.println(frResponse.getRequestAccepter());
 
         if (frResponse.getStatus().name() == "ACCEPT") {
 
@@ -71,7 +78,7 @@ public class FriendshipResponseController{
                     frResponse.getFrInitiatorId(),
                     frResponse.getRequestAccepter(),
                     frResponse.getSymmetricKey(),
-                    frResponse.getStatus());
+                    frResponse.getStatus()); //get fr id
 
             friendshipResponsesRepository.save(friendshipRequestResponse);
             FriendshipRequestCreated answered = friendshipRequestsRepository.findFriendshipRequestCreatedBySenderIdAndReceiverId(frResponse.getFrInitiatorId(), frResponse.getRequestAccepter());
@@ -95,8 +102,11 @@ public class FriendshipResponseController{
         }
     }
 
+    /**
+     * @return a list of FriendshipRequestAccepted pertaining to the current user
+     */
     @GetMapping("/answered_fr_requests")
-    public ResponseEntity<List<FriendshipRequestAccepted>> getAllByRequests() {
+    public ResponseEntity<?> getAllByRequests() {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Long accepterId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
         List<FriendshipRequestAccepted> requestsList = new ArrayList<>();
@@ -109,12 +119,13 @@ public class FriendshipResponseController{
 
             return new ResponseEntity<>(requestsList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+            logger.error("Couldn't retrieve answered friendship requests for user "+currentUser);
+            return ResponseEntity.status(204).body("An unexpected error occurred");
         }
     }
 
     @GetMapping("/responses_to_my_requests")
-    public ResponseEntity<FriendshipResponse> getResponsesToMyRequests() {
+    public ResponseEntity<?> getResponsesToMyRequests() {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Long initiatorId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
         List<FriendshipRequestAccepted> responsesList = new ArrayList<>();
@@ -137,7 +148,8 @@ public class FriendshipResponseController{
 
             return new ResponseEntity<>(friendshipResponse, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(new FriendshipResponse(), HttpStatus.NO_CONTENT);
+            logger.error("Couldn't obtain responses to friendship requests for user "+ currentUser);
+            return ResponseEntity.status(204).body("An unexpected error occurred");
         }
     }
 }

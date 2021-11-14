@@ -1,5 +1,7 @@
 package privacy.controllers;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,8 @@ import privacy.dao.OwnerRepository;
 import privacy.models.MyCredentials;
 import privacy.general.payload.request.CredentialRequest;
 import privacy.registration.payload.response.MessageResponse;
+import privacy.service.security.jwt.AuthEntryPointJwt;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class CredentialsController {
+    private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
+
     private final CredentialsRepository credentialsRepository;
 
     private final OwnerRepository ownerRepository;
@@ -26,8 +32,7 @@ public class CredentialsController {
 
     /**
      *  Function to register new credential
-     *
-     * @param credentialRequest
+     * @param credentialRequest - request to register new credentials
      * @return credential object
      */
     @PostMapping("/new_credential")
@@ -47,17 +52,19 @@ public class CredentialsController {
                 credentialRequest.getLogin(),
                 credentialRequest.getPassword());
 
-        System.out.println(credential);
-
-
         credentialsRepository.save(credential);
+        logger.info("Saved credential: "+credential+" for ");
         return ResponseEntity.ok(credential);
 //        return ResponseEntity.ok(new MessageResponse("Credential registered successfully!"));
 
     }
 
+    /**
+     * Function to display the current user's credentials
+     * @return a ResponseEntity containing info about the credentials
+     */
     @GetMapping("/my_credentials")
-    public ResponseEntity<List<MyCredentials>> getAllCredentials() {
+    public ResponseEntity<?> getAllCredentials() {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
         List<MyCredentials> credentials = new ArrayList<MyCredentials>();
@@ -70,21 +77,25 @@ public class CredentialsController {
 
             return new ResponseEntity<>(credentials, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+            logger.error("Couldn't find resource for user "+userId);
+            return ResponseEntity.status(404).body("Couldn't find resource");
         }
     }
 
-
-
+    /**
+     * @param id of the credential that is to be removed
+     * @return a ResponseEntity confirming the removal or informing about http error 417
+     */
     @DeleteMapping("/delete_credential/{credentialId}")
-    public ResponseEntity<HttpStatus> deleteCredential(@PathVariable("credentialId") long id) {
+    public ResponseEntity<?> deleteCredential(@PathVariable("credentialId") long id) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Long currentUserId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
         try {
             credentialsRepository.deleteMyCredentialsByOwnerIdAndCredentialId(currentUserId, id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.ok("Credential removed");
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+            logger.error("Couldn't remove credential for user "+currentUserId);
+            return ResponseEntity.status(417).body("Couldn't process request");
         }
     }
 }

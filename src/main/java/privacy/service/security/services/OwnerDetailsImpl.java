@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * to build an Authentication object.
  * If the authentication process is successful, we can get User’s information
  * such as username, password, authorities from an Authentication object. We
- * create an implementation of the UserDetails interface to get more information. **/
+ * create an implementation of the UserDetails interface to get more information. */
 @AllArgsConstructor
 @Getter
 @Setter
@@ -41,6 +41,10 @@ public class OwnerDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
+    /**
+     * @param owner to get information about
+     * @return an object of type OwnerDetailsImpl with information retrieved from the Owner object
+     */
     public static OwnerDetailsImpl build(Owner owner) {
         List<GrantedAuthority> authorities = owner.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))

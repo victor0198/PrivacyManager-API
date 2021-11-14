@@ -46,13 +46,13 @@ import java.util.stream.Collectors;
     >>update SecurityContext using Authentication object
     >>generate JWT
     >>get UserDetails from Authentication object
-    >>the response contains JWT and UserDetails data**/
+    >>the response contains JWT and UserDetails data*/
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthenticationController {
-    private static final org.slf4j.Logger Logger= LoggerFactory.getLogger(AuthenticationController.class);
 
     private final PasswordEncoder encoder;
 
@@ -67,7 +67,10 @@ public class AuthenticationController {
     private final OwnerRepository ownerRepository;
 
 
-    /** Sign in request **/
+    /**
+     * @param loginRequest sent by an already signed-up user
+     * @return a JWT: refresh the previously generated token
+     */
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -89,6 +92,11 @@ public class AuthenticationController {
                 new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
     }
 
+    /**
+     * This functions checks the JWT's owner and expiration status and refreshes the token
+     * @param request to refresh the JWT, containing info about the generated token for the user in the current session
+     * @return the token with a reset timer for the user in the current session
+     */
     @PostMapping("/refreshtoken")
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
         String requestRefreshToken = request.getRefreshToken();

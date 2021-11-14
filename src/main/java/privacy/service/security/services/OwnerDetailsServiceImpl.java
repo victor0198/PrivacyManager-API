@@ -22,8 +22,13 @@ public class OwnerDetailsServiceImpl implements UserDetailsService {
 
     private final OwnerRepository ownerRepository;
 
-    /** We override the loadUserByName method and get a full custom User object using UserRepository,
-     * then we build a UserDetails object using static build() method. **/
+    /**
+     * We override the loadUserByName method and get a full custom User object using UserRepository,
+     * then we build a UserDetails object using static build() method.
+     * @param username of the user
+     * @return an object of type OwnerDetailsImpl containing info about the user
+     * @throws UsernameNotFoundException
+     */
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -27,10 +27,18 @@ public class JwtUtils {
     @Value("86400000")
     private int jwtExpirationMs;
 
+    /**
+     * @param userPrincipal - get info about the user in the current session
+     * @return the generated JWT
+     */
     public String generateJwtToken(OwnerDetailsImpl userPrincipal) {
         return generateTokenFromUsername(userPrincipal.getUsername());
     }
 
+    /**
+     * @param username of the user in the current session
+     * @return the generated JWT
+     */
     public String generateTokenFromUsername(String username) {
         return Jwts.builder().setSubject(username).setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)).signWith(SignatureAlgorithm.HS512, jwtSecret)

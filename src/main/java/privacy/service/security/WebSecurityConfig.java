@@ -32,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      * So it has UserDetailsService interface that we need to implement.
      * The implementation of UserDetailsService will be used for configuring DaoAuthenticationProvider
      * by AuthenticationManagerBuilder.userDetailsService() method.
-     * We also need a PasswordEncoder for the DaoAuthenticationProvider. If we don’t specify, it will use plain text. **/
+     * We also need a PasswordEncoder for the DaoAuthenticationProvider. If we don’t specify, it will use plain text. */
     @Autowired
     OwnerDetailsServiceImpl ownerDetailsService;
 
@@ -60,9 +60,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    /** We override the configure(HttpSecurity http) method from WebSecurityConfigurerAdapter interface. It tells Spring Security how
+    /**
+     * We override the configure(HttpSecurity http) method from WebSecurityConfigurerAdapter interface. It tells Spring Security how
      * we configure CORS and CSRF, when we want to require all users to be authenticated or not, which filter (AuthTokenFilter) and when
-     *  we want it to work (filter before UsernamePasswordAuthenticationFilter), which Exception Handler is chosen (AuthEntryPointJwt). **/
+     * we want it to work (filter before UsernamePasswordAuthenticationFilter), which Exception Handler is chosen (AuthEntryPointJwt).
+     * @param http - similar to Spring Security's XML <http> element in the namespace configuration. It allows configuring web based security
+     *             for specific http requests.
+     * By default it will be applied to all requests, but can be restricted using requestMatcher(RequestMatcher) or other similar methods.
+     * @throws Exception to be handled
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http

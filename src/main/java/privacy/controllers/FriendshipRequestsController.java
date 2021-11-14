@@ -1,6 +1,8 @@
 package privacy.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -13,32 +15,17 @@ import privacy.dao.OwnerRepository;
 import privacy.general.payload.response.FriendshipRequests;
 import privacy.models.new_friend.FriendshipRequestCreated;
 import privacy.registration.payload.response.MessageResponse;
+import privacy.service.security.jwt.AuthEntryPointJwt;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** Friendship requests and answers:
-
- Send a request as user 1 (for example), on localhost:8080/api/send_new_fr_request:
- {
- "receiverId": 4,
- "publicKey": "publicKeyFrom6to8"
- }
- As user 4:
- Check your requests on localhost:8080/api/received_fr_requests; //the status of the request is set to PENDING in the requests table
- Answer a request on localhost:8080/api/answer_new_fr_request:
- {
- "frInitiatorId":1,
- "symmetricKey":"symmetricKey4For1",
- "status":"ACCEPT" //or REJECT, in which case - no symmetric key will be saved
- }
- The sent request gets deleted from the firs table - fr_request_created - and the answer is saved in the second table
- - of fr_request_accepted, containing the status - ACCEPT or REJECT **/
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class FriendshipRequestsController {
+    private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
     private final FriendshipRequestsRepository friendshipRequestsRepository;
 
@@ -46,34 +33,45 @@ public class FriendshipRequestsController {
 
 
     /**
-     * Function to register new friend request
-     **/
+     * @param frRequest - contains the senderID - automatically retrieved from JWT, the receiverID and the publicKey
+     * @return a ResponseEntity containing info about an object of type FriendshipRequestCreated with
+     * the senderID, the senderUsername, the receiverId and the publicKey
+     */
     @PostMapping("/send_new_fr_request")
 
     public ResponseEntity<?> registerRequest(@RequestBody FriendshipRequestCreated frRequest) {
-        if (friendshipRequestsRepository.findBySenderId(frRequest.getSenderId()).contains(frRequest.getReceiverId())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Request is already sent!"));
+        if (friendshipRequestsRepository.existsBySenderIdAndReceiverId(frRequest.getSenderId(), frRequest.getReceiverId())) {
+            logger.error("Sending friendship request multiple times: user "+frRequest.getSenderId()+" to user "+frRequest.getReceiverId());
+            return ResponseEntity.status(409).body("You have already sent a request to this user");
         }
-        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
+        else if (frRequest.getSenderId() == frRequest.getReceiverId()){
+            logger.error("Trying to send friendship request to oneself: user "+frRequest.getSenderId());
+            return ResponseEntity.status(405).body("You cannot send friendship requests to yourself");
+        }else {
+            String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+            Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
 
-        frRequest.setSenderId(userId);
-        frRequest.setSenderUsername(currentUser);
+            frRequest.setSenderId(userId);
+            frRequest.setSenderUsername(currentUser);
 
-        FriendshipRequestCreated friendshipRequestCreated = new FriendshipRequestCreated(frRequest.getCreatedRequestId(),
-                frRequest.getSenderId(),
-                frRequest.getSenderUsername(),
-                frRequest.getReceiverId(),
-                frRequest.getPublicKey());
+            FriendshipRequestCreated friendshipRequestCreated = new FriendshipRequestCreated(frRequest.getCreatedRequestId(),
+                    frRequest.getSenderId(),
+                    frRequest.getSenderUsername(),
+                    frRequest.getReceiverId(),
+                    frRequest.getPublicKey());
 
-        friendshipRequestsRepository.save(friendshipRequestCreated);
-        return ResponseEntity.ok(friendshipRequestCreated);
-//        return ResponseEntity.ok(new MessageResponse("Credential registered successfully!"));
+            friendshipRequestsRepository.save(friendshipRequestCreated);
+            return ResponseEntity.ok(friendshipRequestCreated);
+        }
 
     }
 
+    /**
+     * @return a ResponseEntity with a list of objects of type FriendshipRequestCreated
+     * displaying the friendship requests sent by the current user
+     */
     @GetMapping("/sent_fr_requests")
-    public ResponseEntity<List<FriendshipRequestCreated>> getAllSentFrRequests() {
+    public ResponseEntity<?> getAllSentFrRequests() {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
         List<FriendshipRequestCreated> requestsList = new ArrayList<>();
@@ -81,15 +79,20 @@ public class FriendshipRequestsController {
             requestsList.addAll(friendshipRequestsRepository.findBySenderId(userId));
 
             if (requestsList.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return ResponseEntity.status(204).body("You have no pending requests");
             }
 
             return new ResponseEntity<>(requestsList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+            logger.error("No content was found for friendship requests sent by user "+userId);
+            return ResponseEntity.badRequest().body("An unexpected error occurred");
         }
     }
 
+    /**
+     * @return a ResponseEntity with a list FriendshipRequests containing objects of type FriendshipRequestCreated
+     * displaying info about friendship requests received by the current user
+     */
     @GetMapping("/received_fr_requests")
     public ResponseEntity<FriendshipRequests> getAllReceivedFrRequests() {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();

@@ -8,14 +8,16 @@ import privacy.models.new_friend.FriendshipRequestCreated;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional(readOnly = true)
 public interface FriendshipRequestsRepository extends JpaRepository<FriendshipRequestCreated, Long>{
     List<FriendshipRequestCreated> findBySenderId(long senderId);
 
-    List<FriendshipRequestCreated> findFriendshipRequestCreatedByReceiverId(long receiverId);
-    FriendshipRequestCreated findFriendshipRequestCreatedBySenderIdAndReceiverId(long senderId, long receiverId);
+    List<FriendshipRequestCreated> findFriendshipRequestCreatedByReceiverId(Long receiverId);
+    FriendshipRequestCreated findFriendshipRequestCreatedBySenderIdAndReceiverId(Long senderId, Long receiverId);
+    boolean existsBySenderIdAndReceiverId(Long senderId, Long receiverId);
     void deleteFriendshipRequestCreatedBySenderIdAndReceiverId(long senderId, long receiverId);
 
 }
