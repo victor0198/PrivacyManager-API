@@ -1,7 +1,6 @@
 package privacy.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,18 +9,16 @@ import privacy.dao.FriendshipRepository;
 import privacy.dao.FriendshipRequestsRepository;
 import privacy.dao.FriendshipResponsesRepository;
 import privacy.dao.OwnerRepository;
+import privacy.general.payload.response.FriendshipResponse;
+import privacy.general.payload.response.FriendshipResponseItem;
 import privacy.models.Friendship;
-import privacy.models.new_friend.EStatus;
 import privacy.models.new_friend.FriendshipRequestAccepted;
 import privacy.models.new_friend.FriendshipRequestCreated;
-import privacy.registration.payload.response.MessageResponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static privacy.models.new_friend.EStatus.ACCEPT;
-import static privacy.models.new_friend.EStatus.REJECT;
 
 /** Friendship requests and answers:
 
@@ -80,8 +77,10 @@ public class FriendshipResponseController{
             FriendshipRequestCreated answered = friendshipRequestsRepository.findFriendshipRequestCreatedBySenderIdAndReceiverId(frResponse.getFrInitiatorId(), frResponse.getRequestAccepter());
             answered.setStatus(ACCEPT);
             friendshipRequestsRepository.delete(answered);
-            friendshipRepository.save(new Friendship(friendshipRequestResponse.getRequestAccepter(), friendshipRequestResponse.getFrInitiatorId()));
-            return ResponseEntity.ok(friendshipRequestResponse);
+            Friendship newFriendship = new Friendship(friendshipRequestResponse.getFrInitiatorId(), friendshipRequestResponse.getRequestAccepter());
+            friendshipRepository.save(newFriendship);
+
+            return ResponseEntity.ok(newFriendship);
         }else{
             FriendshipRequestAccepted friendshipRequestResponse = new FriendshipRequestAccepted(
                     frResponse.getResponseToRequestId(),
@@ -111,6 +110,34 @@ public class FriendshipResponseController{
             return new ResponseEntity<>(requestsList, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/responses_to_my_requests")
+    public ResponseEntity<FriendshipResponse> getResponsesToMyRequests() {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long initiatorId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
+        List<FriendshipRequestAccepted> responsesList = new ArrayList<>();
+        List<FriendshipResponseItem> responsesListItems = new ArrayList<>();
+        try {
+            responsesList.addAll(friendshipResponsesRepository.getAllByFrInitiatorId(initiatorId));
+
+            for (FriendshipRequestAccepted item:
+                    responsesList) {
+                Friendship friendship = friendshipRepository.findFriendshipByUserOneIdAndUserTwoId(initiatorId, item.getRequestAccepter());
+                if (friendship != null){
+                    FriendshipResponseItem new_response = new FriendshipResponseItem(friendship, item);
+                    responsesListItems.add(new_response);
+                }
+
+            }
+
+            FriendshipResponse friendshipResponse = new FriendshipResponse();
+            friendshipResponse.setResponses(responsesListItems);
+
+            return new ResponseEntity<>(friendshipResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new FriendshipResponse(), HttpStatus.NO_CONTENT);
         }
     }
 }
