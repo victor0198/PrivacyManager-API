@@ -5,10 +5,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import privacy.models.Friendship;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
-@Transactional(readOnly = true)
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     Friendship findFriendshipByUserOneIdAndUserTwoId(Long userOneId, Long userTwoId);
+    List<Friendship> findFriendshipsByUserOneIdEqualsOrUserTwoIdEquals(Long userOneId, Long userTwoId);
 }
