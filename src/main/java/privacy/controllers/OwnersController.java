@@ -89,8 +89,11 @@ public class OwnersController {
         return userData.map(owner -> new ResponseEntity<>(owner, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    /** This function returns a single user and all the information about them.
-     * In order to find a specific user, one must know the correct username. **/
+    /**
+     * Search user by their username. In order to find a specific user, one must know the correct username.
+     * @param ownerUsername - the username by which the search is performed
+     * @return a single user and all the information about them.
+     */
     @GetMapping("/searchOwners/{username}")
     public ResponseEntity<Owner> getUserByUsername(@PathVariable("username") String ownerUsername) {
         Optional<Owner> userData = ownerRepository.findOwnerByUsername(ownerUsername);

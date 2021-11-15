@@ -27,7 +27,7 @@ public class OwnerDetailsServiceImpl implements UserDetailsService {
      * then we build a UserDetails object using static build() method.
      * @param username of the user
      * @return an object of type OwnerDetailsImpl containing info about the user
-     * @throws UsernameNotFoundException
+     * @throws UsernameNotFoundException if the user is not found by the given username
      */
     @Override
     @Transactional

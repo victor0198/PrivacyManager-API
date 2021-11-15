@@ -43,8 +43,10 @@ public class FriendshipRequestsController {
         if (friendshipRequestsRepository.existsBySenderIdAndReceiverId(frRequest.getSenderId(), frRequest.getReceiverId())) {
             logger.error("Sending friendship request multiple times: user "+frRequest.getSenderId()+" to user "+frRequest.getReceiverId());
             return ResponseEntity.status(409).body("You have already sent a request to this user");
-        }
-        else if (frRequest.getSenderId() == frRequest.getReceiverId()){
+        } else if (friendshipRequestsRepository.existsBySenderIdAndReceiverId(frRequest.getReceiverId(), frRequest.getSenderId())) {
+            logger.error("The other user has already sent a request to user "+frRequest.getSenderId());
+            return ResponseEntity.status(409).body("You have already received a request from this user");
+        } else if (frRequest.getSenderId() == frRequest.getReceiverId()){
             logger.error("Trying to send friendship request to oneself: user "+frRequest.getSenderId());
             return ResponseEntity.status(405).body("You cannot send friendship requests to yourself");
         }else {

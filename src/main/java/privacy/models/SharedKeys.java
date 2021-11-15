@@ -9,7 +9,6 @@ import java.io.Serializable;
 @ToString
 @Getter
 @Setter
-//@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class SharedKeys implements Serializable {

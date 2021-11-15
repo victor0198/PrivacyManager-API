@@ -27,10 +27,30 @@ public class FriendshipRequestAccepted {
     )
     private long responseToRequestId;
     private long frInitiatorId;
+    private String initiatorUsername;
     private long requestAccepter;
+    private String accepterUsername;
     @Column(columnDefinition="TEXT")
     private String symmetricKey;
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private EStatus status;
+
+    public FriendshipRequestAccepted(long responseToRequestId, long frInitiatorId, String initiatorUsername, long requestAccepter, String symmetricKey, EStatus status) {
+        this.responseToRequestId = responseToRequestId;
+        this.frInitiatorId = frInitiatorId;
+        this.initiatorUsername = initiatorUsername;
+        this.requestAccepter = requestAccepter;
+        this.symmetricKey = symmetricKey;
+        this.status = status;
+    }
+
+    public FriendshipRequestAccepted(long responseToRequestId, long frInitiatorId, long requestAccepter, String accepterUsername, String symmetricKey, EStatus status) {
+        this.responseToRequestId = responseToRequestId;
+        this.frInitiatorId = frInitiatorId;
+        this.requestAccepter = requestAccepter;
+        this.accepterUsername = accepterUsername;
+        this.symmetricKey = symmetricKey;
+        this.status = status;
+    }
 }

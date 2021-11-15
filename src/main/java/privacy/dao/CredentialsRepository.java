@@ -12,7 +12,10 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface CredentialsRepository extends JpaRepository<MyCredentials, Long> {
 
-        /** View all the specified user's credentials **/
+        /**
+         * @param userId - the list should display only the credentials that belong to the user with this id
+         * @return a list containing information about the registered credentials
+         */
         List<MyCredentials> findMyCredentialsByOwnerId(Long userId);
 
         void deleteMyCredentialsByOwnerIdAndCredentialId(Long userId, Long credentialId);
