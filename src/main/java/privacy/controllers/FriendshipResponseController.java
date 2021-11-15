@@ -57,7 +57,7 @@ public class FriendshipResponseController{
 
         frResponse.setRequestAccepter(currentUserId);
         Optional<Owner> initiatorUser = ownerRepository.findById(frResponse.getFrInitiatorId());
-        if (initiatorUser.isPresent() && friendshipRequestsRepository.existsBySenderIdAndReceiverId(frResponse.getFrInitiatorId(), frResponse.getRequestAccepter())) {
+        if (initiatorUser.isPresent() && friendshipRequestsRepository.existsFriendshipRequestCreatedBySenderIdAndAndReceiverId(frResponse.getFrInitiatorId(), frResponse.getRequestAccepter())) {
             frResponse.setInitiatorUsername(initiatorUser.get().getUsername());
 
             if (frResponse.getStatus().name() == "ACCEPT") {
@@ -93,7 +93,7 @@ public class FriendshipResponseController{
             }
         }
         else {
-            return ResponseEntity.status(404).body("Error: friendship initiator with this id couldn't be found");
+            return ResponseEntity.status(404).body("Error: friendship initiator with this id found");
         }
     }
 

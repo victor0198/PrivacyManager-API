@@ -40,21 +40,22 @@ public class FriendshipRequestsController {
     @PostMapping("/send_new_fr_request")
 
     public ResponseEntity<?> registerRequest(@RequestBody FriendshipRequestCreated frRequest) {
-        if (friendshipRequestsRepository.existsBySenderIdAndReceiverId(frRequest.getSenderId(), frRequest.getReceiverId())) {
-            logger.error("Sending friendship request multiple times: user "+frRequest.getSenderId()+" to user "+frRequest.getReceiverId());
-            return ResponseEntity.status(409).body("You have already sent a request to this user");
-        } else if (friendshipRequestsRepository.existsBySenderIdAndReceiverId(frRequest.getReceiverId(), frRequest.getSenderId())) {
-            logger.error("The other user has already sent a request to user "+frRequest.getSenderId());
-            return ResponseEntity.status(409).body("You have already received a request from this user");
-        } else if (frRequest.getSenderId() == frRequest.getReceiverId()){
-            logger.error("Trying to send friendship request to oneself: user "+frRequest.getSenderId());
-            return ResponseEntity.status(405).body("You cannot send friendship requests to yourself");
-        }else {
-            String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-            Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
+        frRequest.setSenderId(userId);
+        frRequest.setSenderUsername(currentUser);
 
-            frRequest.setSenderId(userId);
-            frRequest.setSenderUsername(currentUser);
+        boolean alreadySent = friendshipRequestsRepository.existsFriendshipRequestCreatedBySenderIdAndAndReceiverId(frRequest.getSenderId(), frRequest.getReceiverId());
+        if (alreadySent) {
+            logger.warn("Sending friendship request multiple times: user "+frRequest.getSenderId()+" to user "+frRequest.getReceiverId());
+            return new ResponseEntity<>(new FriendshipRequestCreated(), HttpStatus.NOT_ACCEPTABLE);
+        } else if (friendshipRequestsRepository.existsFriendshipRequestCreatedBySenderIdAndAndReceiverId(frRequest.getReceiverId(), frRequest.getSenderId())) {
+            logger.warn("The other user has already sent a request to user "+frRequest.getSenderId());
+            return new ResponseEntity<>(new FriendshipRequestCreated(), HttpStatus.CONFLICT);
+        } else if (frRequest.getSenderId() == frRequest.getReceiverId()){
+            logger.warn("Trying to send friendship request to oneself: user "+frRequest.getSenderId());
+            return new ResponseEntity<>(new FriendshipRequestCreated(), HttpStatus.METHOD_NOT_ALLOWED);
+        }else {
 
             FriendshipRequestCreated friendshipRequestCreated = new FriendshipRequestCreated(frRequest.getCreatedRequestId(),
                     frRequest.getSenderId(),

@@ -14,6 +14,6 @@ import java.io.Serializable;
 public class SharedKeys implements Serializable {
     @Id
     private Long cloudKeyId;
-    @Id
+
     private Long friendshipId;
 }
