@@ -19,7 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import privacy.service.security.services.OwnerDetailsServiceImpl;
 
 /** This class makes a single execution for each request to our API. It provides a doFilterInternal() method
- * that we will implement parsing & validating JWT, loading User details (using UserDetailsService), checking
+ * that we will implement parsing and validating JWT, loading User details (using UserDetailsService), checking
  * Authorization (using UsernamePasswordAuthenticationToken). */
 public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
@@ -32,7 +32,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     /**
      * The function below enables us to:
-     *      *  – get JWT from the Authorization header (by removing Bearer prefix);
+     *      – get JWT from the Authorization header (by removing Bearer prefix);
      *      – if the request has JWT, validate it, parse username from it;
      *      – from username, get UserDetails to create an Authentication object;
      *      – set the current UserDetails in SecurityContext using setAuthentication(authentication) method.

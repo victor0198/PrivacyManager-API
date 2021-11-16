@@ -72,7 +72,7 @@ public class CredentialsController {
             credentials.addAll(credentialsRepository.findMyCredentialsByOwnerId(userId));
 
             if (credentials.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return ResponseEntity.status(204).body("No registered credentials");
             }
 
             return new ResponseEntity<>(credentials, HttpStatus.OK);

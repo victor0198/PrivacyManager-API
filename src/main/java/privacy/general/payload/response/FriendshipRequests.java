@@ -15,6 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FriendshipRequests {
-    private  List<FriendshipRequestCreated> notificationsList = new ArrayList<>();
+    private  List<FriendshipRequestCreated> notificationsList;
 
 }

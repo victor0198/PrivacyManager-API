@@ -32,22 +32,6 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/** The controller receives and handles a request after it was filtered by OncePerRequestFilter.
-
- > AuthController handles signup/login requests
-
- – /api/auth/signup
-    >>check existing username/email
-    >>create new User (as USER if there is no specified role)
-    >>save User to database using UserRepository
-
- – /api/auth/signin
-    >>authenticate { username, password }
-    >>update SecurityContext using Authentication object
-    >>generate JWT
-    >>get UserDetails from Authentication object
-    >>the response contains JWT and UserDetails data*/
-
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequiredArgsConstructor
@@ -112,7 +96,11 @@ public class AuthenticationController {
                         "Refresh token is not in database!"));
     }
 
-    /** Sign up request **/
+    /**
+     * @param signUpRequest contains information about the username and the password by which new users try to register
+     * @return a ResponseEntity that contains the status of the processed request and information about the newly registered
+     * user, if the request was successfully processed.
+     */
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (ownerRepository.existsByUsername(signUpRequest.getUsername())) {

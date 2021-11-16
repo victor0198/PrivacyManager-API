@@ -3,7 +3,6 @@ package privacy.controllers;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +23,6 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class OwnersController {
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
-
-
-    private final CredentialsRepository credentialsRepository;
 
     private final OwnerRepository ownerRepository;
 
@@ -84,7 +80,7 @@ public class OwnersController {
 
     /**
      * @param id of the owner being searched
-     * @return a ResponseEntity containing an object of type owner with info about the user being searched, when found
+     * @return a ResponseEntity containing an object of type Owner with info about the user being searched, when found
      */
     @GetMapping("/owners/{ownerId}")
     public ResponseEntity<Owner> getUsersById(@PathVariable("ownerId") long id) {
@@ -93,8 +89,11 @@ public class OwnersController {
         return userData.map(owner -> new ResponseEntity<>(owner, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    /** This function returns a single user and all the information about them.
-     * In order to find a specific user, one must know the correct username. **/
+    /**
+     * Search user by their username. In order to find a specific user, one must know the correct username.
+     * @param ownerUsername - the username by which the search is performed
+     * @return a single user and all the information about them.
+     */
     @GetMapping("/searchOwners/{username}")
     public ResponseEntity<Owner> getUserByUsername(@PathVariable("username") String ownerUsername) {
         Optional<Owner> userData = ownerRepository.findOwnerByUsername(ownerUsername);

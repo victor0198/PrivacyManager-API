@@ -38,12 +38,12 @@ public class KeyController {
     @PostMapping("/new_key")
     public ResponseEntity<?> uploadKey(@RequestBody KeyRequest keyRequest) {
         if (keyRequest.getFileChecksum().isEmpty() || keyRequest.getFileKey().isEmpty()) {
-            logger.error("Invalid request body");
+            logger.warn("Invalid request body");
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Invalid request body!"));
         }
 
         if(userDetailsService.getUserIdFromToken() != keyRequest.getUserId()) {
-            logger.error("User is not authorized");
+            logger.warn("User is not authorized");
             return ResponseEntity.badRequest().body(new MessageResponse("Error: User is not authorized to perform this action!"));
         }
 
