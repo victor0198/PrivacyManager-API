@@ -15,7 +15,7 @@ import privacy.service.security.services.OwnerDetailsImpl;
 import java.nio.file.attribute.UserPrincipalNotFoundException;
 
 /** The UserDetailsService interface has a method to load User by username and returns a UserDetails object
- * that Spring Security can use for authentication and validation. **/
+ * that Spring Security can use for authentication and validation. */
 @Service
 @RequiredArgsConstructor
 public class OwnerDetailsServiceImpl implements UserDetailsService {

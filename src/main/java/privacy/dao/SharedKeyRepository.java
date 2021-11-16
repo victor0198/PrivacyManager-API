@@ -11,7 +11,9 @@ import java.util.Optional;
 @Repository
 @Transactional(readOnly = true)
 public interface SharedKeyRepository extends JpaRepository<SharedKeys, Long> {
-    Optional<SharedKeys> findAllByFriendshipId(Long friendshipId);
+    Optional<SharedKeys> findSharedKeysByFriendshipId(Long friendshipId);
 
-    List<SharedKeys> findByCloudKeyId(long cloudKeyId);
+    List<SharedKeys> findSharedKeysByCloudKeyId(Long cloudKeyId);
+
+    List<SharedKeys> findSharedKeysByCloudKeyIdEqualsOrFriendshipIdEquals(Long cloudKeyId, Long friendshipId);
 }
