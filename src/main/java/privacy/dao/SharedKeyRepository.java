@@ -15,5 +15,5 @@ public interface SharedKeyRepository extends JpaRepository<SharedKeys, Long> {
 
     List<SharedKeys> findSharedKeysByCloudKeyId(Long cloudKeyId);
 
-    List<SharedKeys> findSharedKeysByCloudKeyIdEqualsOrFriendshipIdEquals(Long cloudKeyId, Long friendshipId);
+    List<SharedKeys> findSharedKeysByCloudKeyIdEqualsAndFriendshipIdEquals(Long cloudKeyId, Long friendshipId);
 }

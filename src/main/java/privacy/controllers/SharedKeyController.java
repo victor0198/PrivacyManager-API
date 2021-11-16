@@ -10,16 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import privacy.dao.*;
 import privacy.general.payload.request.CredentialRequest;
 import privacy.general.payload.request.ShareKeyRequest;
-import privacy.models.CloudKeys;
-import privacy.models.MyCredentials;
-import privacy.models.MyKeys;
-import privacy.models.SharedKeys;
+import privacy.models.*;
 import privacy.registration.payload.response.MessageResponse;
 import privacy.service.security.jwt.AuthEntryPointJwt;
 import privacy.service.security.services.OwnerDetailsServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -80,6 +78,33 @@ public class SharedKeyController {
 
     }
 
+    @GetMapping("/searchSharedKeysWithFriend/{user2Id}")
+    public ResponseEntity<?> getSharedKeyByUser2Id(@PathVariable("user2Id") Long user2Id) {
+        try {
+            Optional<Friendship> try1 = friendshipRepository.findFriendshipByUserOneIdAndUserTwoId(ownerDetailsService.getUserIdFromToken(), user2Id);
+            Optional<Friendship> try2 = friendshipRepository.findFriendshipByUserOneIdAndUserTwoId(user2Id,ownerDetailsService.getUserIdFromToken());
+            Friendship friendship;
+            if (try1.isPresent()){
+                friendship = try1.get();
+            } else if (try2.isPresent()){
+                friendship = try1.get();
+            } else{
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: You are not friends yet"));
+            }
+
+            Optional<SharedKeys> userSharedKeys = sharedKeyRepository.findSharedKeysByFriendshipId(friendship.getFriendshipId());
+
+            if (userSharedKeys.isEmpty()) {
+                return ResponseEntity.status(204).body("No registered cloud keys for sharing with this key id");
+            }
+            return new ResponseEntity<>(userSharedKeys, HttpStatus.OK);
+        } catch (Exception e){
+            logger.error("Couldn't retrieve information about all registered cloud keys for sharing with this user2 id for user + " + ownerDetailsService.getUserIdFromToken());
+            return ResponseEntity.status(204).body("An unexpected error occurred");
+        }
+
+    }
+
 
     /**
      * @return a ResponseEntity containing an object of type List with info about the user's friendships
@@ -89,7 +114,7 @@ public class SharedKeyController {
         try {
 //            String currentUser = SecurityContextHolder.getContext().getAuthentication().getName(); //will be needed for additional identity and possession checks
 //            Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
-            List<SharedKeys> userSharedKeys = sharedKeyRepository.findSharedKeysByCloudKeyIdEqualsOrFriendshipIdEquals(cloudKeyId, friendshipId);
+            List<SharedKeys> userSharedKeys = sharedKeyRepository.findSharedKeysByCloudKeyIdEqualsAndFriendshipIdEquals(cloudKeyId, friendshipId);
 
             if (userSharedKeys.isEmpty()) {
                 return ResponseEntity.status(204).body("No registered cloud keys for sharing with this key id or this friendship id");

@@ -130,8 +130,9 @@ public class FriendshipResponseController{
 
             for (FriendshipRequestAccepted item:
                     responsesList) {
-                Friendship friendship = friendshipRepository.findFriendshipByUserOneIdAndUserTwoId(initiatorId, item.getRequestAccepter());
-                if (friendship != null){
+                Optional<Friendship> friendshipTry = friendshipRepository.findFriendshipByUserOneIdAndUserTwoId(initiatorId, item.getRequestAccepter());
+                if (friendshipTry.isPresent()){
+                    Friendship friendship = friendshipTry.get();
                     item.setAccepterUsername(ownerRepository.findById(item.getRequestAccepter()).get().getUsername());
                     FriendshipResponseItem new_response = new FriendshipResponseItem(friendship, item);
                     responsesListItems.add(new_response);
