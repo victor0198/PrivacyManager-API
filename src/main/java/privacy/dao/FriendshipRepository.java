@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Transactional(readOnly = true)
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     Optional<Friendship> findFriendshipByUserOneIdAndUserTwoId(Long userOneId, Long userTwoId);
     List<Friendship> findFriendshipsByUserOneIdEqualsOrUserTwoIdEquals(Long userOneId, Long userTwoId);

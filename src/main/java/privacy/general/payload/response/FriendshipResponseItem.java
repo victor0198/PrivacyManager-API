@@ -17,6 +17,9 @@ public class FriendshipResponseItem {
     private String symmetricKey;
     private EStatus status;
 
+
+
+
     public FriendshipResponseItem(Friendship friendship, FriendshipRequestAccepted friendshipRequestAccepted) {
         this.friendshipId = friendship.getFriendshipId();
         this.responseToRequestId = friendshipRequestAccepted.getResponseToRequestId();

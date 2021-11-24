@@ -1,31 +1,30 @@
-package privacy.controllers;
+package privacy.service.security.services;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import privacy.dao.CredentialsRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import privacy.dao.OwnerRepository;
 import privacy.general.payload.request.SearchAllOwnersRequest;
 import privacy.general.payload.response.SearchOwnerResponse;
 import privacy.models.Owner;
 import privacy.service.security.jwt.AuthEntryPointJwt;
-import privacy.service.security.services.OwnerService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/api")
-public class OwnersController {
+@AllArgsConstructor
+@Service
+public class OwnerService {
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
-    private final OwnerService ownerService;
+    private final OwnerRepository ownerRepository;
 
     /**
      * @return a list containing objects of type Owner to display all registered users
@@ -46,11 +45,11 @@ public class OwnersController {
     }
 
     /**
-     *  This function returns a list of all possible matches for the username being searched.
-     *      * It comes in handy when one doesn't know the entire username of the sought user.
-     *      * In return to the search request, this function returns a list of usernames (only).
-     *      * If the one searching found the username they needed, they may proceed to use the /searchOwners/{username}
-     *      * endpoint to get a full description of the specified user and its username.
+     * This function returns a list of all possible matches for the username being searched.
+     * * It comes in handy when one doesn't know the entire username of the sought user.
+     * * In return to the search request, this function returns a list of usernames (only).
+     * * If the one searching found the username they needed, they may proceed to use the /searchOwners/{username}
+     * * endpoint to get a full description of the specified user and its username.
      *
      * @param ownerUsername - the searched user's possible username or a slice of it
      * @return a ResponseEntity containing info about the user being searched, when found
@@ -64,7 +63,7 @@ public class OwnersController {
             if (users.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            for (Owner ow : users){
+            for (Owner ow : users) {
                 SearchAllOwnersRequest sao = new SearchAllOwnersRequest(ow.getOwnerId(), ow.getUsername());
                 saoList.add(sao);
             }
@@ -83,37 +82,50 @@ public class OwnersController {
      * @param id of the owner being searched
      * @return a ResponseEntity containing an object of type Owner with info about the user being searched, when found
      */
-    @GetMapping("/owners/{ownerId}")
-    public ResponseEntity<Owner> getUsersById(@PathVariable("ownerId") long id) {
-        return ownerService.getUsersById(id).map(owner -> new ResponseEntity<>(owner, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public Optional<Owner> getUsersById(long id) {
+        return ownerRepository.findById(id);
     }
 
     /**
      * Search user by their username. In order to find a specific user, one must know the correct username.
+     *
      * @param ownerUsername - the username by which the search is performed
      * @return a single user and all the information about them.
      */
-    @GetMapping("/searchOwners/{username}")
-    public ResponseEntity<Owner> getUserByUsername(@PathVariable("username") String ownerUsername) {
-        return ownerService.getUserByUsername(ownerUsername).map(owner -> new ResponseEntity<>(owner, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public Optional<Owner> getUserByUsername(String ownerUsername) {
+        return ownerRepository.findOwnerByUsername(ownerUsername);
     }
 
     /**
      * Request to clear the entire list of registered users
+     *
      * @return a ResponseEntity informing about the delete request status
      */
     @DeleteMapping("/owners")
-    public void deleteAllUsers() {
-        ownerService.deleteAllUsers();
+    public ResponseEntity<?> deleteAllUsers() {
+        try {
+            ownerRepository.deleteAll();
+            return ResponseEntity.status(200).body("Users deleted");
+        } catch (Exception e) {
+            logger.error("Couldn't process request to delete all users from database");
+            return ResponseEntity.status(417).body("An unexpected error occurred");
+        }
+
     }
 
     /**
      * Function to remove a user
+     *
      * @param id of the user
      * @return a ResponseEntity informing about the delete request status
      */
-    @DeleteMapping("/owners/{ownerId}")
-    public ResponseEntity<?> deleteUser(@PathVariable("ownerId") long id) {
-        ownerService.deleteUser(id);
+    public ResponseEntity<?> deleteUser(long id) {
+        try {
+            ownerRepository.deleteById(id);
+            return ResponseEntity.status(200).body("Owner removed");
+        } catch (Exception e) {
+            logger.error("Couldn't delete user with id " + id);
+            return ResponseEntity.status(417).body("An unexpected error occurred");
+        }
     }
 }

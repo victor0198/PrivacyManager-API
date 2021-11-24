@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  backend:
+    image: "anniegavr/privacy-manager:latest"
+    ports:
+      - "80:8080"
+    restart: "always"
