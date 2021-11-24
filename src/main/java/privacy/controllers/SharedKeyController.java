@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import privacy.dao.*;
 import privacy.general.payload.request.CredentialRequest;
 import privacy.general.payload.request.ShareKeyRequest;
+import privacy.general.payload.response.KeysForMeResponse;
 import privacy.models.*;
 import privacy.registration.payload.response.MessageResponse;
 import privacy.service.security.jwt.AuthEntryPointJwt;
@@ -47,15 +48,70 @@ public class SharedKeyController {
 
     }
 
-    @GetMapping("/sharedKeys")
-    public ResponseEntity<?> getAllSharedKeys() {
-        try {
-            List<SharedKeys> keys = new ArrayList<>(sharedKeyRepository.findAll());
+//    @GetMapping("/sharedKeys")
+//    public ResponseEntity<?> getAllSharedKeys() {
+//        try {
+//            List<SharedKeys> keys = new ArrayList<>(sharedKeyRepository.findAll());
+//            KeysForMeResponse keysForMeResponse = new KeysForMeResponse();
+//            keysForMeResponse.setKeysForMe(keys);
+//
+//            if (keys.isEmpty()) {
+//                return new ResponseEntity<>(keysForMeResponse, HttpStatus.NO_CONTENT);
+//            }
+//
+//            return new ResponseEntity<>(keysForMeResponse, HttpStatus.OK);
+//        } catch (Exception e) {
+//            logger.error("Couldn't retrieve information about all registered cloud keys for sharing");
+//            return ResponseEntity.status(204).body("An unexpected error occurred");
+//        }
+//    }
 
-            if (keys.isEmpty()) {
-                return ResponseEntity.status(204).body("No registered keys");
+    @GetMapping("/keys_for_me")
+    public ResponseEntity<?> getKeysForMe() {
+        try {
+            logger.info("USER id:" + ownerDetailsService.getUserIdFromToken());
+            List<Friendship> myFriendshipsTwo = friendshipRepository.findFriendshipsByUserTwoId(ownerDetailsService.getUserIdFromToken());
+            List<Friendship> myFriendshipsOne = friendshipRepository.findFriendshipsByUserOneId(ownerDetailsService.getUserIdFromToken());
+            logger.info("theFriendships:" + myFriendshipsOne.toString());
+            logger.info("theFriendships:" + myFriendshipsTwo.toString());
+
+            List<SharedKeys> allSharedKeys = new ArrayList<>();
+
+            for (Friendship friendship:
+                    myFriendshipsOne) {
+                List<SharedKeys> sharedKeys = sharedKeyRepository.findSharedKeysByFriendshipId(friendship.getFriendshipId());
+                allSharedKeys.addAll(sharedKeys);
             }
-            return new ResponseEntity<>(keys, HttpStatus.OK);
+
+            for (Friendship friendship:
+                    myFriendshipsTwo) {
+                List<SharedKeys> sharedKeys = sharedKeyRepository.findSharedKeysByFriendshipId(friendship.getFriendshipId());
+                allSharedKeys.addAll(sharedKeys);
+            }
+
+            logger.info("allSharedKeys:" + allSharedKeys.toString());
+
+            List<CloudKeys> cloudKeys = new ArrayList<>();
+            for (SharedKeys sharedKey:
+                 allSharedKeys) {
+                CloudKeys cloudKey = cloudKeysForSharingRepository.findCloudKeysByCloudKeyId(sharedKey.getCloudKeyId());
+                cloudKeys.add(cloudKey);
+            }
+
+            logger.info("cloudKeys:" + cloudKeys.toString());
+
+
+            KeysForMeResponse keysForMeResponse = new KeysForMeResponse();
+            if (cloudKeys.isEmpty()) {
+                cloudKeys.add(new CloudKeys(0,0,"",""));
+            }
+            keysForMeResponse.setKeysForMe(cloudKeys);
+
+            if (cloudKeys.isEmpty()) {
+                return new ResponseEntity<>(keysForMeResponse, HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(keysForMeResponse, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Couldn't retrieve information about all registered cloud keys for sharing");
             return ResponseEntity.status(204).body("An unexpected error occurred");
@@ -92,7 +148,7 @@ public class SharedKeyController {
                 return ResponseEntity.badRequest().body(new MessageResponse("Error: You are not friends yet"));
             }
 
-            Optional<SharedKeys> userSharedKeys = sharedKeyRepository.findSharedKeysByFriendshipId(friendship.getFriendshipId());
+            List<SharedKeys> userSharedKeys = sharedKeyRepository.findSharedKeysByFriendshipId(friendship.getFriendshipId());
 
             if (userSharedKeys.isEmpty()) {
                 return ResponseEntity.status(204).body("No registered cloud keys for sharing with this key id");

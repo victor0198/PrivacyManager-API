@@ -12,4 +12,6 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface CloudKeysForSharingRepository extends JpaRepository<CloudKeys, Long> {
     Optional<CloudKeys> findCloudKeysByKeyId(Long keyId);
+
+    CloudKeys findCloudKeysByCloudKeyId(Long cloudKeyId);
 }

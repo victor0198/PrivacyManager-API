@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     Optional<Friendship> findFriendshipByUserOneIdAndUserTwoId(Long userOneId, Long userTwoId);
     List<Friendship> findFriendshipsByUserOneIdEqualsOrUserTwoIdEquals(Long userOneId, Long userTwoId);
+    List<Friendship> findFriendshipsByUserTwoId(Long userTwoId);
+    List<Friendship> findFriendshipsByUserOneId(Long userTwoId);
 
 //    Optional<Friendship> findFriendshipsByFriendshipId(Long friendshipId);
 }
