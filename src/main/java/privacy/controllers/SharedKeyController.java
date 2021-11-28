@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import privacy.dao.*;
-import privacy.general.payload.request.CredentialRequest;
 import privacy.general.payload.request.ShareKeyRequest;
 import privacy.general.payload.response.KeysForMeResponse;
 import privacy.models.*;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")

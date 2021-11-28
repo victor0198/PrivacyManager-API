@@ -21,6 +21,7 @@ public class OwnerService {
 
     private final OwnerRepository ownerRepository;
 
+
     /**
      * @return a list containing objects of type Owner to display all registered users
      */

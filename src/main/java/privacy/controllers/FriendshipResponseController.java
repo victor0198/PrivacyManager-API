@@ -26,7 +26,6 @@ import java.util.Optional;
 
 import static privacy.models.new_friend.EStatus.ACCEPT;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")

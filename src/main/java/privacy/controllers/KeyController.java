@@ -19,7 +19,6 @@ import privacy.service.security.services.OwnerDetailsServiceImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")

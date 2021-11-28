@@ -15,7 +15,6 @@ import privacy.service.security.jwt.AuthEntryPointJwt;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
