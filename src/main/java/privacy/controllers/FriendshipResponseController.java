@@ -56,6 +56,7 @@ public class FriendshipResponseController{
         Long currentUserId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
 
         frResponse.setRequestAccepter(currentUserId);
+        frResponse.setAccepterUsername(currentUser);
         Optional<Owner> initiatorUser = ownerRepository.findById(frResponse.getFrInitiatorId());
         if (initiatorUser.isPresent() && friendshipRequestsRepository.existsFriendshipRequestCreatedBySenderIdAndAndReceiverId(frResponse.getFrInitiatorId(), frResponse.getRequestAccepter())) {
             frResponse.setInitiatorUsername(initiatorUser.get().getUsername());
@@ -67,6 +68,7 @@ public class FriendshipResponseController{
                         frResponse.getFrInitiatorId(),
                         frResponse.getInitiatorUsername(),
                         frResponse.getRequestAccepter(),
+                        frResponse.getAccepterUsername(),
                         frResponse.getSymmetricKey(),
                         frResponse.getStatus());
 
@@ -84,6 +86,7 @@ public class FriendshipResponseController{
                         frResponse.getFrInitiatorId(),
                         frResponse.getInitiatorUsername(),
                         frResponse.getRequestAccepter(),
+                        frResponse.getAccepterUsername(),
                         frResponse.getSymmetricKey().replaceAll(frResponse.getSymmetricKey(), ""),
                         frResponse.getStatus());
                 friendshipResponsesRepository.save(friendshipRequestResponse);
