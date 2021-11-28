@@ -33,8 +33,7 @@ public class OwnersController {
     @GetMapping("/owners")
     public ResponseEntity<?> getAllUsers() {
         try {
-            List<Owner> users = new ArrayList<>(ownerRepository.findAll());
-
+            List<Owner> users = ownerService.getAllUsers();
             if (users.isEmpty()) {
                 return ResponseEntity.status(204).body("No registered users");
             }
@@ -58,20 +57,11 @@ public class OwnersController {
     @GetMapping("/searchAllOwners/{username}")
     public ResponseEntity<?> getAllUsersByUsername(@PathVariable("username") String ownerUsername) {
         try {
-            List<Owner> users = new ArrayList<>(ownerRepository.findAllByUsernameContaining(ownerUsername));
-
-            List<SearchAllOwnersRequest> saoList = new ArrayList<>();
-            if (users.isEmpty()) {
+            SearchOwnerResponse users = ownerService.getAllUsersByUsername(ownerUsername);
+            if (users.getUsersFound().isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            for (Owner ow : users){
-                SearchAllOwnersRequest sao = new SearchAllOwnersRequest(ow.getOwnerId(), ow.getUsername());
-                saoList.add(sao);
-            }
-
-            SearchOwnerResponse searchOwnerResponse = new SearchOwnerResponse();
-            searchOwnerResponse.setUsersFound(saoList);
-            return new ResponseEntity<>(searchOwnerResponse, HttpStatus.OK);
+            return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Couldn't search all users matching the search' username");
             return ResponseEntity.status(204).body("An unexpected error occurred");
@@ -114,6 +104,12 @@ public class OwnersController {
      */
     @DeleteMapping("/owners/{ownerId}")
     public ResponseEntity<?> deleteUser(@PathVariable("ownerId") long id) {
-        ownerService.deleteUser(id);
+        try {
+            ownerService.deleteUser(id);
+            return ResponseEntity.status(200).body("Owner removed");
+        } catch (Exception e) {
+            logger.error("Couldn't delete user with id " + id);
+            return ResponseEntity.status(417).body("An unexpected error occurred");
+        }
     }
 }

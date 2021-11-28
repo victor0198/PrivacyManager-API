@@ -3,12 +3,7 @@ package privacy.service.security.services;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import privacy.dao.OwnerRepository;
 import privacy.general.payload.request.SearchAllOwnersRequest;
 import privacy.general.payload.response.SearchOwnerResponse;
@@ -29,19 +24,8 @@ public class OwnerService {
     /**
      * @return a list containing objects of type Owner to display all registered users
      */
-    @GetMapping("/owners")
-    public ResponseEntity<?> getAllUsers() {
-        try {
-            List<Owner> users = new ArrayList<>(ownerRepository.findAll());
-
-            if (users.isEmpty()) {
-                return ResponseEntity.status(204).body("No registered users");
-            }
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("Couldn't retrieve information about all registered users");
-            return ResponseEntity.status(204).body("An unexpected error occurred");
-        }
+    public List<Owner> getAllUsers() {
+        return new ArrayList<>(ownerRepository.findAll());
     }
 
     /**
@@ -54,27 +38,23 @@ public class OwnerService {
      * @param ownerUsername - the searched user's possible username or a slice of it
      * @return a ResponseEntity containing info about the user being searched, when found
      */
-    @GetMapping("/searchAllOwners/{username}")
-    public ResponseEntity<?> getAllUsersByUsername(@PathVariable("username") String ownerUsername) {
-        try {
-            List<Owner> users = new ArrayList<>(ownerRepository.findAllByUsernameContaining(ownerUsername));
+    public SearchOwnerResponse getAllUsersByUsername(String ownerUsername) {
+        List<Owner> users = new ArrayList<>(ownerRepository.findAllByUsernameContaining(ownerUsername));
 
-            List<SearchAllOwnersRequest> saoList = new ArrayList<>();
-            if (users.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            for (Owner ow : users) {
-                SearchAllOwnersRequest sao = new SearchAllOwnersRequest(ow.getOwnerId(), ow.getUsername());
-                saoList.add(sao);
-            }
+        List<SearchAllOwnersRequest> saoList = new ArrayList<>();
 
-            SearchOwnerResponse searchOwnerResponse = new SearchOwnerResponse();
-            searchOwnerResponse.setUsersFound(saoList);
-            return new ResponseEntity<>(searchOwnerResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("Couldn't search all users matching the search' username");
-            return ResponseEntity.status(204).body("An unexpected error occurred");
+        if (users.isEmpty()) {
+            return new SearchOwnerResponse();
         }
+
+        for (Owner ow : users) {
+            SearchAllOwnersRequest sao = new SearchAllOwnersRequest(ow.getOwnerId(), ow.getUsername());
+            saoList.add(sao);
+        }
+
+        SearchOwnerResponse searchOwnerResponse = new SearchOwnerResponse();
+        searchOwnerResponse.setUsersFound(saoList);
+        return searchOwnerResponse;
     }
 
 
@@ -97,35 +77,18 @@ public class OwnerService {
     }
 
     /**
-     * Request to clear the entire list of registered users
-     *
-     * @return a ResponseEntity informing about the delete request status
+     * Request to clear the entire list of registered user
      */
-    @DeleteMapping("/owners")
-    public ResponseEntity<?> deleteAllUsers() {
-        try {
-            ownerRepository.deleteAll();
-            return ResponseEntity.status(200).body("Users deleted");
-        } catch (Exception e) {
-            logger.error("Couldn't process request to delete all users from database");
-            return ResponseEntity.status(417).body("An unexpected error occurred");
-        }
-
+    public void deleteAllUsers() {
+        ownerRepository.deleteAll();
     }
 
     /**
      * Function to remove a user
      *
      * @param id of the user
-     * @return a ResponseEntity informing about the delete request status
      */
-    public ResponseEntity<?> deleteUser(long id) {
-        try {
-            ownerRepository.deleteById(id);
-            return ResponseEntity.status(200).body("Owner removed");
-        } catch (Exception e) {
-            logger.error("Couldn't delete user with id " + id);
-            return ResponseEntity.status(417).body("An unexpected error occurred");
-        }
+    public void deleteUser(long id) {
+        ownerRepository.deleteById(id);
     }
 }
