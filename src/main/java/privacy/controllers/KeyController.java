@@ -14,6 +14,7 @@ import privacy.general.payload.request.KeyRequest;
 import privacy.models.MyKeys;
 import privacy.registration.payload.response.MessageResponse;
 import privacy.service.security.jwt.AuthEntryPointJwt;
+import privacy.service.security.services.KeyService;
 import privacy.service.security.services.OwnerDetailsServiceImpl;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import java.util.List;
 public class KeyController {
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
-    private final KeyRepository keyRepository;
+    private final KeyService keyService;
 
     private final OwnerDetailsServiceImpl userDetailsService;
 
@@ -45,14 +46,8 @@ public class KeyController {
             logger.warn("User is not authorized");
             return ResponseEntity.badRequest().body(new MessageResponse("Error: User is not authorized to perform this action!"));
         }
-
-        MyKeys key = new MyKeys(keyRequest.getKeyId(),
-                keyRequest.getUserId(),
-                keyRequest.getFileKey(),
-                keyRequest.getFileChecksum());
-        logger.info("Saved key: "+key + "\nfor user "+ keyRequest.getUserId());
-        keyRepository.save(key);
-        return ResponseEntity.ok(key);
+        logger.info("Saved key: "+ keyService.uploadKey(keyRequest) + "\nfor user "+ keyRequest.getUserId());
+        return ResponseEntity.ok(keyService.uploadKey(keyRequest));
     }
 
     /**
@@ -62,16 +57,11 @@ public class KeyController {
      */
     @GetMapping("/my_keys")
     public ResponseEntity<?> getAllKeys() {
-
-        List<MyKeys> keysList = new ArrayList<>();
         try {
-            keysList.addAll(keyRepository.findByUserId(userDetailsService.getUserIdFromToken()));
-
-            if (keysList.isEmpty()) {
+            if (keyService.getAllKeys().isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-
-            return new ResponseEntity<>(keysList, HttpStatus.OK);
+            return new ResponseEntity<>(keyService.getAllKeys(), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Couldn't retrieve keys for user "+userDetailsService.getUserIdFromToken());
             return ResponseEntity.internalServerError().body("An unexpected error occurred");
@@ -85,11 +75,11 @@ public class KeyController {
      */
     @DeleteMapping("/my_keys/{keyId}")
     public ResponseEntity<?> deleteKey(@PathVariable("keyId") long id) {
-        if(userDetailsService.getUserIdFromToken() != keyRepository.findByKeyId(id).get().getUserId()) {
+        if(userDetailsService.getUserIdFromToken() != keyService.userIdFromRepo(id)) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: User is not authorized to perform this action!"));
         }
         try {
-            keyRepository.deleteById(id);
+            keyService.deleteKey(id);
             return ResponseEntity.ok(new MessageResponse("Key removed"));
         } catch (Exception e) {
             logger.error("Error with status 417 for user "+userDetailsService.getUserIdFromToken());
