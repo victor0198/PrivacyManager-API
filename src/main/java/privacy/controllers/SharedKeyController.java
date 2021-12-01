@@ -21,16 +21,14 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class SharedKeyController {
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
-    private final OwnerRepository ownerRepository;
     private final OwnerDetailsServiceImpl ownerDetailsService;
     private final CloudKeysForSharingRepository cloudKeysForSharingRepository;
-    private final KeyRepository keyRepository; //cloud keys
     private final SharedKeyRepository sharedKeyRepository;
-    private final FriendshipRepository friendshipRepository; //will be needed later on
+    private final FriendshipRepository friendshipRepository;
 
     @PostMapping("/share_new_key")
     public ResponseEntity<?> shareKey(@RequestBody ShareKeyRequest shareKeysRequest){

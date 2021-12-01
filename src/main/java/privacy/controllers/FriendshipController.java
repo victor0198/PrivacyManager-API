@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class FriendshipController {
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 

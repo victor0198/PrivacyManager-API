@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class FriendshipResponseController{
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 

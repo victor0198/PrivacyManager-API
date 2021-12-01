@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class CredentialsController {
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 

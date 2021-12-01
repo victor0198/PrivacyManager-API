@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class KeyController {
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 

@@ -14,7 +14,7 @@ import privacy.service.security.services.OwnerDetailsServiceImpl;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class FriendshipRequestsController {
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
