@@ -11,19 +11,18 @@ import privacy.dao.FriendshipRepository;
 import privacy.dao.OwnerRepository;
 import privacy.models.Friendship;
 import privacy.service.security.jwt.AuthEntryPointJwt;
+import privacy.service.security.services.FriendshipService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class FriendshipController {
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
-    private final OwnerRepository ownerRepository;
-    private final FriendshipRepository friendshipRepository;
+    private final FriendshipService friendshipService;
 
     /**
      * @return a list containing objects of type Friendship to display all registered friendships
@@ -31,7 +30,7 @@ public class FriendshipController {
     @GetMapping("/friendships")
     public ResponseEntity<?> getAllFriendships() {
         try {
-            List<Friendship> friendships = new ArrayList<>(friendshipRepository.findAll());
+            List<?> friendships = friendshipService.getAllFriendships();
 
             if (friendships.isEmpty()) {
                 return ResponseEntity.status(204).body("No registered friendships");
@@ -50,14 +49,12 @@ public class FriendshipController {
     @GetMapping("/searchUserFriendships")
     public ResponseEntity<?> getFriendshipById() {
         try {
-            String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-            Long userId = ownerRepository.findOwnerByUsername(currentUser).get().getOwnerId();
-            List<Friendship> userFriendships = friendshipRepository.findFriendshipsByUserOneIdEqualsOrUserTwoIdEquals(userId, userId);
+            List<?> fr = friendshipService.getFriendshipById();
 
-            if (userFriendships.isEmpty()) {
+            if (fr.isEmpty()) {
                 return ResponseEntity.status(204).body("No registered friendships");
             }
-            return new ResponseEntity<>(userFriendships, HttpStatus.OK);
+            return new ResponseEntity<>(fr, HttpStatus.OK);
         } catch (Exception e){
             logger.error("Couldn't retrieve information about all registered friendships for user + " );
             return ResponseEntity.status(204).body("An unexpected error occurred");
@@ -73,7 +70,7 @@ public class FriendshipController {
     @DeleteMapping("/friendships")
     public ResponseEntity<?> deleteAllFriendships() {
         try {
-            friendshipRepository.deleteAll();
+            friendshipService.deleteAllFriendships();
             return ResponseEntity.status(200).body("Friendships deleted");
         } catch (Exception e) {
             logger.error("Couldn't process request to delete all friendships from database");
@@ -90,7 +87,7 @@ public class FriendshipController {
     @DeleteMapping("/friendships/{friendshipId}")
     public ResponseEntity<?> deleteFriendship(@PathVariable("friendshipId") long id) {
         try {
-            friendshipRepository.deleteById(id);
+            friendshipService.deleteFriendship(id);
             return ResponseEntity.status(200).body("Friendship removed");
         } catch (Exception e) {
             logger.error("Couldn't delete friendship with id "+id);
