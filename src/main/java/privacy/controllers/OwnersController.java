@@ -6,17 +6,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import privacy.dao.CredentialsRepository;
-import privacy.dao.OwnerRepository;
-import privacy.general.payload.request.SearchAllOwnersRequest;
 import privacy.general.payload.response.SearchOwnerResponse;
 import privacy.models.Owner;
 import privacy.service.security.jwt.AuthEntryPointJwt;
 import privacy.service.security.services.OwnerService;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
