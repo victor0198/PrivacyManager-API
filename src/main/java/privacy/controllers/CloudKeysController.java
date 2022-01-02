@@ -8,7 +8,7 @@ import privacy.dao.CloudKeysForSharingRepository;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class CloudKeysController {
     private final CloudKeysForSharingRepository cloudKeysForSharingRepository;
 
