@@ -1,5 +1,5 @@
 # Passwords and encrypted files manager - web server application
-![general1](https://user-images.githubusercontent.com/56108881/149843683-2a042b41-1a40-46cf-b7f9-625fcfbe9d8a.png)
+![general1](https://user-images.githubusercontent.com/56108881/149844532-e74fc3c2-1c65-40d4-862f-dc3af5b08aa4.png)
 
 Server application has the following functionalities:
 1. Register and authenticate the user;
